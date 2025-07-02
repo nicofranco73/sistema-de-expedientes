@@ -12,15 +12,15 @@
     <link rel="stylesheet" href="publico/css/estilos.css">
 </head>
 <body>
-    <!-- Header fijo -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 sticky-top">
-        <div class="container align-items-center"><!-- alineación vertical centrada -->
+    <!-- Header fijo con colores personalizados -->
+    <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-2 sticky-top">
+        <div class="container align-items-center">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="publico/imagen/LOGOCDE.png" alt="Logo Concejo Deliberante" height="56" class="me-2" style="border-radius:8px;">
-                <span class="fw-bold" style="color:#17365a;">Concejo Deliberante</span>
+                <span class="fw-bold brand-title">Concejo Deliberante</span>
             </a>
             <div class="ms-auto">
-                <a href="/login.php" class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" title="Iniciar sesión">
+                <a href="/login.php" class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" title="Iniciar sesión">
                     <i class="bi bi-person-circle fs-4"></i>
                 </a>
             </div>

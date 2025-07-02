@@ -3,4 +3,4 @@
 // Aquí se incluye únicamente la vista principal.
 // Más adelante, puedes agregar lógica de enrutamiento para cargar diferentes vistas según la URL o parámetros.
 
-include 'vistas/dashboard.php';
+include 'vistas/login.php';

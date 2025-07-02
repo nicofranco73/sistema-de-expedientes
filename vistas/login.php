@@ -8,13 +8,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Tu CSS personalizado -->
-    <link rel="stylesheet" href="../publico/css/estilos.css">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
 </head>
 <body>
-    <div class="container">
-        <div class="main-box mt-5">
-            <h1 class="mb-4 text-center">Iniciar Sesión</h1>
+    <div class="login-container d-flex align-items-center justify-content-center min-vh-100 bg-light">
+        <div class="main-box login w-100">
+            <div class="login-logo">
+                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo Consejo">
+            </div>
+            <div class="login-title">Sistema de Expedientes</div>
+            <div class="login-subtext mb-4">Ingrese su usuario y contraseña para acceder</div>
             <form action="procesar_login.php" method="post" autocomplete="off">
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
@@ -24,11 +28,11 @@
                     <label for="contrasena" class="form-label">Contraseña</label>
                     <input type="password" id="contrasena" name="contrasena" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">
+                <button type="submit" class="btn btn-login mt-3">
                     <i class="bi bi-door-open-fill"></i> Ingresar
                 </button>
                 <div class="text-center mt-3">
-                    <a href="recuperar_contrasena.php" class="link-secondary small">
+                    <a href="recuperar_contrasena.php" class="login-link">
                         <i class="bi bi-question-circle"></i> ¿Olvidó su contraseña?
                     </a>
                 </div>

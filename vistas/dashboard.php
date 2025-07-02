@@ -7,9 +7,22 @@
     <!-- Bootstrap CSS + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../publico/css/estilos.css">
+    <link rel="stylesheet" href="/expedientes/publico/css/estilos.css?v=3">
 </head>
 <body>
+    <!-- HEADER CON LOGO (ahora NAV con fondo azul) -->
+    <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-3">
+        <div class="container-fluid d-flex align-items-center justify-content-between px-0">
+            <div class="d-flex align-items-center">
+                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo" class="logo-header me-3" style="height:56px;">
+                <span class="fs-4 fw-bold titulo-header">Expedientes</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="me-3 text-secondary">Usuario: <strong>Admin</strong></span>
+                <a href="#" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
+            </div>
+        </div>
+    </nav>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -19,30 +32,21 @@
                 </div>
                 <ul class="nav flex-column gap-1 menu-dashboard">
                     <li class="nav-item">
-                        <a class="nav-link active" href="dashboard.php"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+                        <a class="nav-link active" href="/expedientes/vistas/dashboard.php"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="carga_expediente.php"><i class="bi bi-archive me-2"></i>Carga de Expediente</a>
+                        <a class="nav-link" href="/expedientes/vistas/carga_expedientes.php"><i class="bi bi-archive me-2"></i>Carga de Expediente</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="carga_iniciador.php"><i class="bi bi-person-plus me-2"></i>Carga de Iniciador</a>
+                        <a class="nav-link" href="/expedientes/vistas/carga_iniciador.php"><i class="bi bi-person-plus me-2"></i>Carga de Iniciador</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="resultados.php"><i class="bi bi-list-task me-2"></i>Resultados</a>
+                        <a class="nav-link" href="/expedientes/vistas/resultados.php"><i class="bi bi-list-task me-2"></i>Resultados</a>
                     </li>
-                    <!-- Agrega más enlaces aquí si tienes más vistas -->
                 </ul>
             </nav>
             <!-- Main Content -->
             <main class="col-12 col-md-10 ms-sm-auto px-4 main-dashboard">
-                <!-- Header -->
-                <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
-                    <h1 class="mb-0">Dashboard</h1>
-                    <div>
-                        <span class="me-3 text-secondary">Usuario: <strong>Admin</strong></span>
-                        <a href="#" class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
-                    </div>
-                </div>
                 <!-- Estadísticas -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
@@ -75,13 +79,13 @@
                 </div>
                 <!-- Accesos rápidos -->
                 <div class="d-flex flex-wrap gap-3 justify-content-center accesos-dashboard">
-                    <a href="carga_expediente.php" class="btn btn-primary btn-lg">
+                    <a href="/expedientes/vistas/carga_expedientes.php" class="btn btn-primary btn-lg">
                         <i class="bi bi-archive"></i> Nuevo Expediente
                     </a>
-                    <a href="carga_iniciador.php" class="btn btn-outline-primary btn-lg">
+                    <a href="/expedientes/vistas/carga_iniciador.php" class="btn btn-outline-primary btn-lg">
                         <i class="bi bi-person-plus"></i> Nuevo Iniciador
                     </a>
-                    <a href="resultados.php" class="btn btn-outline-success btn-lg">
+                    <a href="/expedientes/vistas/resultados.php" class="btn btn-outline-success btn-lg">
                         <i class="bi bi-list-task"></i> Ver Expedientes
                     </a>
                 </div>
