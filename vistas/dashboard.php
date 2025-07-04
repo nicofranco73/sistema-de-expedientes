@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['usuario'])) {
+    header('Location: ../login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,8 +25,10 @@
                 <span class="fs-4 fw-bold titulo-header">Expedientes</span>
             </div>
             <div class="d-flex align-items-center">
-                <span class="me-3 text-secondary">Usuario: <strong>Admin</strong></span>
-                <a href="#" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                <span class="me-3 text-secondary">Usuario: <strong><?php echo htmlspecialchars($_SESSION['usuario']); ?></strong></span>
+                <a href="logout.php" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </a>
             </div>
         </div>
     </nav>

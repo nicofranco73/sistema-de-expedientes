@@ -1,3 +1,27 @@
+<?php
+session_start();
+
+$error = '';
+
+// Si ya está logueado, redirige al dashboard
+if (isset($_SESSION['usuario'])) {
+    header('Location: vistas/dashboard.php');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usuario = $_POST['usuario'] ?? '';
+    $contrasena = $_POST['contrasena'] ?? '';
+
+    if ($usuario === 'admin' && $contrasena === 'admin') {
+        $_SESSION['usuario'] = $usuario;
+        header('Location: dashboard.php');
+        exit;
+    } else {
+        $error = 'Usuario o contraseña incorrectos';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,13 +37,18 @@
 </head>
 <body>
     <div class="login-container d-flex align-items-center justify-content-center min-vh-100 bg-light">
-        <div class="main-box login w-100">
+        <div class="main-box login w-100" style="max-width: 400px;">
             <div class="login-logo">
                 <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo Consejo">
             </div>
             <div class="login-title">Sistema de Expedientes</div>
             <div class="login-subtext mb-4">Ingrese su usuario y contraseña para acceder</div>
-            <form action="procesar_login.php" method="post" autocomplete="off">
+            <?php if ($error): ?>
+                <div class="alert alert-danger py-2 text-center" role="alert">
+                    <?php echo $error; ?>
+                </div>
+            <?php endif; ?>
+            <form action="" method="post" autocomplete="off">
                 <div class="mb-3">
                     <label for="usuario" class="form-label">Usuario</label>
                     <input type="text" id="usuario" name="usuario" class="form-control" required autofocus>
@@ -28,7 +57,7 @@
                     <label for="contrasena" class="form-label">Contraseña</label>
                     <input type="password" id="contrasena" name="contrasena" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-login mt-3">
+                <button type="submit" class="btn btn-login mt-3 w-100">
                     <i class="bi bi-door-open-fill"></i> Ingresar
                 </button>
                 <div class="text-center mt-3">

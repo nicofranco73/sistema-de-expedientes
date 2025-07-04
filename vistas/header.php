@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Consulta de Expedientes | Concejo Deliberante de Eldorado</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="publico/css/estilos.css">
-</head>
-<body>
-    <!-- Header fijo con colores personalizados -->
-    <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-2 sticky-top">
-        <div class="container align-items-center">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="publico/imagen/LOGOCDE.png" alt="Logo Concejo Deliberante" height="56" class="me-2" style="border-radius:8px;">
-                <span class="fw-bold brand-title">Concejo Deliberante</span>
-            </a>
-            <div class="ms-auto">
-                <a href="/login.php" class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" title="Iniciar sesión">
+<?php
+// IMPORTANTE: Antes de incluir este archivo, asegurate de definir:
+// $es_admin = isset($_SESSION['usuario_logueado']) && $_SESSION['usuario_logueado'] === true;
+// $usuario_nombre = $_SESSION['usuario_nombre'] ?? 'Usuario';
+?>
+<nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-2 sticky-top">
+    <div class="container align-items-center">
+        <a class="navbar-brand d-flex align-items-center" href="/expedientes/vistas/dashboard.php">
+            <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo Concejo Deliberante" height="56" class="me-2" style="border-radius:8px;">
+            <span class="fw-bold brand-title">Concejo Deliberante</span>
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <?php if ($es_admin): ?>
+                <span class="fw-semibold text-light">Bienvenido, <?= htmlspecialchars($usuario_nombre) ?></span>
+                <a href="/expedientes/vistas/dashboard.php" class="btn btn-outline-light">Dashboard</a>
+                <a href="/expedientes/logout.php" class="btn btn-danger">Cerrar sesión</a>
+            <?php else: ?>
+                <a href="/expedientes/login.php" class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" title="Iniciar sesión">
                     <i class="bi bi-person-circle fs-4"></i>
                 </a>
-            </div>
+            <?php endif; ?>
         </div>
-    </nav>
-</body>
-</html>
+    </div>
+</nav>

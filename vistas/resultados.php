@@ -1,4 +1,9 @@
 <?php
+session_start();
+$es_admin = isset($_SESSION['usuario_logueado']) && $_SESSION['usuario_logueado'] === true;
+$usuario_nombre = $_SESSION['usuario_nombre'] ?? 'Admin';
+
+// Tus datos de ejemplo o desde la base de datos
 $expedientes = [
     [
         'numero' => '1001',
@@ -22,24 +27,24 @@ $expedientes = [
     <meta charset="UTF-8">
     <title>Resultados de Expedientes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Tu CSS personalizado -->
-    <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
+    <link rel="stylesheet" href="/expedientes/publico/css/estilos.css?v=3">
 </head>
 <body>
-    <!-- HEADER CON LOGO -->
-    <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-3">
-        <div class="container-fluid d-flex align-items-center justify-content-between px-0">
-            <div class="d-flex align-items-center">
-                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo" class="logo-header me-3" style="height:56px;">
-                <span class="fs-4 fw-bold titulo-header">Expedientes</span>
-            </div>
-            <div class="d-flex align-items-center">
-                <span class="me-3 text-secondary">Usuario: <strong>Admin</strong></span>
-                <a href="#" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
+<?php if ($es_admin): ?>
+    <!-- HEADER DASHBOARD -->
+    <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-2 sticky-top">
+        <div class="container align-items-center">
+            <a class="navbar-brand d-flex align-items-center" href="/expedientes/vistas/dashboard.php">
+                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo Concejo Deliberante" height="56" class="me-2" style="border-radius:8px;">
+                <span class="fw-bold brand-title">Expedientes</span>
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="fw-semibold text-light">Usuario: <strong><?= htmlspecialchars($usuario_nombre) ?></strong></span>
+                <a href="/expedientes/vistas/dashboard.php" class="btn btn-outline-light">Dashboard</a>
+                <a href="/expedientes/logout.php" class="btn btn-danger">Cerrar sesión</a>
             </div>
         </div>
     </nav>
@@ -117,11 +122,71 @@ $expedientes = [
                                 </table>
                             </div>
                             <!-- aquí va paginación si hace falta -->
+                            <div class="mt-4">
+                                <a href="dashboard.php" class="btn btn-primary">Volver al dashboard</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
+<?php else: ?>
+    <!-- LAYOUT PÚBLICO SIMPLE -->
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10">
+                <div class="card card-resultados shadow-lg border-0 rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="titulo-principal mb-4">Resultados de Expedientes</h2>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 tabla-resultados">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>N° Expediente</th>
+                                        <th>Letra</th>
+                                        <th>Año</th>
+                                        <th>Fecha Ingreso</th>
+                                        <th>Lugar</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($expedientes as $exp): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($exp['numero']) ?></td>
+                                        <td><?= htmlspecialchars($exp['letra']) ?></td>
+                                        <td><?= htmlspecialchars($exp['anio']) ?></td>
+                                        <td><?= htmlspecialchars($exp['fecha_ingreso']) ?></td>
+                                        <td><?= htmlspecialchars($exp['lugar']) ?></td>
+                                        <td class="text-center">
+                                            <a href="ver_detalle.php?numero=<?= urlencode($exp['numero']) ?>&letra=<?= urlencode($exp['letra']) ?>&anio=<?= urlencode($exp['anio']) ?>"
+                                            class="btn btn-primary btn-sm me-1 btn-ver-detalle" title="Ver Detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="descargar.php?numero=<?= urlencode($exp['numero']) ?>&letra=<?= urlencode($exp['letra']) ?>&anio=<?= urlencode($exp['anio']) ?>"
+                                            class="btn btn-outline-secondary btn-sm btn-descargar" title="Descargar">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                    <?php if (empty($expedientes)): ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No se encontraron expedientes.</td>
+                                    </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4">
+                            <a href="consulta.php" class="btn btn-secondary">Nueva consulta</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
 </body>
 </html>
