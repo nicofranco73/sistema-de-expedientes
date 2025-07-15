@@ -19,7 +19,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link<?php if (basename($_SERVER['PHP_SELF']) == 'consulta_dashboard.php') echo ' active'; ?>" href="/expedientes/vistas/consulta_dashboard.php">
+            <a class="nav-link<?php if (basename($_SERVER['PHP_SELF']) == 'consulta.php') echo ' active'; ?>" href="/expedientes/vistas/consulta.php">
                 <i class="bi bi-search me-2"></i>Consulta
             </a>
         </li>

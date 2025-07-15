@@ -1,7 +1,38 @@
 /* ===========================
+   ESTILOS GLOBALES / BIENVENIDA
+   =========================== */
+/* Estilos generales para el body de la página de bienvenida */
+body {
+    background: #f6f8fc; /* Fondo de la página de bienvenida (Ajustado para consistencia) */
+    font-family: Arial, sans-serif; /* Añadido para fuente por defecto */
+}
+
+/* Estilos para las tarjetas de rol (Administrador, Usuario) */
+.role-card {
+    transition: transform 0.2s; /* Animación suave al pasar el mouse */
+    cursor: pointer; /* Indica que es clickeable */
+    border: none; /* Añadido para eliminar bordes por defecto */
+    background-color: #fff; /* Añadido para fondo blanco */
+    border-radius: 15px; /* Bordes redondeados */
+    overflow: hidden; /* Asegura que no haya desbordamiento */
+}
+
+/* Efecto hover para las tarjetas de rol */
+.role-card:hover {
+    transform: scale(1.05); /* Ligeramente más grande */
+    box-shadow: 0 8px 24px rgba(32,56,100,0.15); /* Sombra más pronunciada */
+}
+
+/* Estilos para los iconos dentro de las tarjetas de rol */
+.role-icon {
+    font-size: 4rem; /* Tamaño grande del icono */
+    color: #203864; /* Color oscuro para contraste */
+}
+
+/* ===========================
    HEADER / NAVBAR & HEADER DASHBOARD
    =========================== */
-   nav.header-dashboard {
+nav.header-dashboard {
     min-height: 72px;
     padding-top: 12px !important;
     padding-bottom: 12px !important;
@@ -229,7 +260,7 @@ nav.header-dashboard .container {
    =========================== */
 @keyframes fadein {
     from { opacity: 0; transform: translateY(32px);}
-    to   { opacity: 1; transform: translateY(0);}
+    to   { opacity: 1; transform: translateY(0);}
 }
 
 /* ===========================
@@ -295,8 +326,7 @@ nav.header-dashboard .container {
 /* ===========================
    ESTILOS LOGIN ESPECÍFICOS
    =========================== */
-/* 
-   Estilos específicos para la pantalla de login.
+/* Estilos específicos para la pantalla de login.
    Se utiliza la clase .main-box.login y componentes asociados.
 */
 .login-container {
@@ -436,8 +466,14 @@ label.form-label {
     margin-bottom: 4px;
     font-weight: 500;
 }
-h1, .titulo-principal {
-    color: #112D4E;
+/* La clase .titulo-principal se usa en varias páginas. Asegúrate de que el body para consulta_publico
+   y resultados_publico use #f6f8fc para consistencia si no hay un body específico definido. */
+.titulo-principal { /* Añadido: para los títulos principales en consulta y resultados */
+    font-weight: 700;
+    color: #203864; /* Ajustado para tu paleta de colores */
+}
+h1 {
+    color: #112D4E; /* Asegura que h1 use tu color principal */
     font-size: 2.1rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
@@ -452,6 +488,30 @@ h1, .titulo-principal {
     font-size: 1.01rem;
     margin-bottom: 2rem;
 }
+
+/* ===========================
+   ESTILOS ESPECÍFICOS DE CONSULTA Y RESULTADOS PÚBLICOS
+   (ANTERIORMENTE EN <STYLE> TAGS, AHORA EN CSS EXTERNO)
+   =========================== */
+/* Estilos para el contenedor del formulario de consulta pública (en consulta_publico.php) */
+.card-form-publica {
+    max-width: 650px;
+    margin: 48px auto; /* Centrado y espaciado vertical */
+    border-radius: 18px; /* Bordes redondeados */
+    box-shadow: 0 4px 24px 0 rgba(70, 89, 125, 0.10); /* Sombra suave */
+    background-color: #fff; /* Fondo blanco */
+}
+
+/* Estilos para el contenedor de resultados en la página de resultados (en resultados_publico.php) */
+.results-container {
+    max-width: 800px;
+    margin: 48px auto;
+    background-color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(70, 89, 125, 0.10);
+    padding: 30px;
+}
+
 
 /* ===========================
    RESPONSIVE (AJUSTES PARA PANTALLAS PEQUEÑAS)

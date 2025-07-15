@@ -4,8 +4,9 @@ session_start();
 $error = '';
 
 // Si ya está logueado, redirige al dashboard
+// Corregido: La ruta es simplemente 'dashboard.php' porque ambos archivos están en la misma carpeta 'vistas'.
 if (isset($_SESSION['usuario'])) {
-    header('Location: vistas/dashboard.php');
+    header('Location: dashboard.php'); // RUTA CORREGIDA AQUÍ
     exit;
 }
 
@@ -13,8 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = $_POST['usuario'] ?? '';
     $contrasena = $_POST['contrasena'] ?? '';
 
+    // Lógica de autenticación (usuario: admin, contrasena: admin)
     if ($usuario === 'admin' && $contrasena === 'admin') {
         $_SESSION['usuario'] = $usuario;
+        // Esta redirección ya estaba correcta si el login es exitoso
         header('Location: dashboard.php');
         exit;
     } else {
@@ -28,18 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Iniciar Sesión | Sistema de Expedientes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
+    <link rel="stylesheet" href="../publico/css/estilos.css">
 </head>
 <body>
     <div class="login-container d-flex align-items-center justify-content-center min-vh-100 bg-light">
         <div class="main-box login w-100" style="max-width: 400px;">
             <div class="login-logo">
-                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo Consejo">
+                <img src="../publico/imagen/LOGOCDE.png" alt="Logo Consejo">
             </div>
             <div class="login-title">Sistema de Expedientes</div>
             <div class="login-subtext mb-4">Ingrese su usuario y contraseña para acceder</div>
@@ -68,5 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

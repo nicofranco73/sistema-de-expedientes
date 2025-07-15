@@ -17,11 +17,11 @@ if (!isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css?v=3">
 </head>
 <body>
-    <!-- HEADER CON LOGO (ahora NAV con fondo azul) -->
+    <!-- HEADER CON LOGO (NAV) -->
     <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-3">
         <div class="container-fluid d-flex align-items-center justify-content-between px-0">
             <div class="d-flex align-items-center">
-                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo" class="logo-header me-3" style="height:56px;">
+                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo" class="logo-header me-3" style="height:76px;">
                 <span class="fs-4 fw-bold titulo-header">Expedientes</span>
             </div>
             <div class="d-flex align-items-center">
@@ -50,7 +50,7 @@ if (!isset($_SESSION['usuario'])) {
                         <a class="nav-link" href="/expedientes/vistas/carga_iniciador.php"><i class="bi bi-person-plus me-2"></i>Carga de Iniciador</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/resultados.php"><i class="bi bi-list-task me-2"></i>Resultados</a>
+                        <a class="nav-link" href="/expedientes/vistas/consulta.php"><i class="bi bi-search me-2"></i>Consulta de Expedientes</a>
                     </li>
                 </ul>
             </nav>
@@ -94,10 +94,9 @@ if (!isset($_SESSION['usuario'])) {
                     <a href="/expedientes/vistas/carga_iniciador.php" class="btn btn-outline-primary btn-lg">
                         <i class="bi bi-person-plus"></i> Nuevo Iniciador
                     </a>
-                    <a href="/expedientes/vistas/resultados.php" class="btn btn-outline-success btn-lg">
-                        <i class="bi bi-list-task"></i> Ver Expedientes
-                    </a>
+                    <!-- Eliminado el acceso rápido a Ver Expedientes -->
                 </div>
+                <!-- NO HAY FORMULARIO DE CONSULTA ACÁ -->
             </main>
         </div>
     </div>

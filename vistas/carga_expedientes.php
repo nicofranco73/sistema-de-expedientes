@@ -14,7 +14,7 @@
     <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-3">
         <div class="container-fluid d-flex align-items-center justify-content-between px-0">
             <div class="d-flex align-items-center">
-                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo" class="logo-header me-3" style="height:56px;">
+                <img src="/expedientes/publico/imagen/LOGOCDE.png" alt="Logo" class="logo-header me-3" style="height:76px;">
                 <span class="fs-4 fw-bold titulo-header">Expedientes</span>
             </div>
             <div class="d-flex align-items-center">
