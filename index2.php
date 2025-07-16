@@ -128,13 +128,15 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                             <label for="captcha" class="form-label">Ingrese el código *</label>
                             <div class="d-flex align-items-center gap-2">
                                 <input type="text" 
-                                       id="captcha" 
-                                       name="captcha" 
-                                       class="form-control" 
-                                       maxlength="4" 
-                                       pattern="[A-Z0-9]{4}" 
-                                       autocomplete="off"
-                                       required>
+                                    id="captcha" 
+                                    name="captcha" 
+                                    class="form-control text-uppercase" 
+                                    maxlength="4" 
+                                    pattern="[A-Z0-9]{4}" 
+                                    autocomplete="off"
+                                    style="text-transform:uppercase"
+                                    oninput="this.value = this.value.toUpperCase();"
+                                    required>
                                 <span class="badge bg-secondary fs-5" style="letter-spacing:2px; user-select: none;"><?= e($captcha) ?></span>
                             </div>
                             <div class="form-text">Ingrese los 4 caracteres que ve en el recuadro exactamente como aparecen.</div>
@@ -148,10 +150,15 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                                 <i class="bi bi-eraser"></i> Limpiar Campos
                             </button>
                         </div>
+                        
                     </div>
+                   
                 </form>
+                
             </div>
+            
         </div>
+        
 
     </div>
 </body>

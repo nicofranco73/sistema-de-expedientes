@@ -1,6 +1,5 @@
 <?php
-<?php
-session_start();
+
 
 // Verificar método POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
