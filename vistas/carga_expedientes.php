@@ -52,9 +52,9 @@
                     }
                     ?>
                     <form action="procesar_carga_expedientes.php" method="post" autocomplete="off">
-                        <div class="row g-4">
+                        <div class="row g-7 mb-4">
                             <!--  Numero-->
-                            <div class="col-md-6">
+                            <div class="col-md-4 mb-2">
                                 <label for="numero" class="form-label">Número *</label>
                                 <input type="text"
                                     id="numero"
@@ -67,7 +67,7 @@
                                     required>
                             </div>
                             <!--  Letra-->
-                            <div class="col-md-3">
+                            <div class="col-md-4 mb-2">
                                 <label for="letra" class="form-label">Letra *</label>
                                 <select id="letra"
                                     name="letra"
@@ -79,8 +79,34 @@
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                            <!--  Folio-->
+                            <div class="col-md-4 mb-2">
+                                <label for="folio" class="form-label">Folio *</label>
+                                <input type="text"
+                                    id="folio"
+                                    name="folio"
+                                    class="form-control"
+                                    placeholder="Ej: 1234"
+                                    pattern="[0-9]{1,6}"
+                                    maxlength="6"
+                                    title="Solo números, máximo 6 dígitos"
+                                    required>
+                            </div>
+                            <!--  Libro-->
+                            <div class="col-md-4 mb-2">
+                                <label for="libro" class="form-label">Libro *</label>
+                                <input type="text"
+                                    id="libro"
+                                    name="libro"
+                                    class="form-control"
+                                    placeholder="Ej: 1234"
+                                    pattern="[0-9]{1,6}"
+                                    maxlength="6"
+                                    title="Solo números, máximo 6 dígitos"
+                                    required>
+                            </div>
                             <!--  Año-->
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-2">
                                 <label for="anio" class="form-label">Año *</label>
                                 <select id="anio" name="anio" class="form-select" required>
                                     <option value="">Elige un año</option>
@@ -89,46 +115,63 @@
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="row g-4">
                             <!--  Fecha y hora de ingreso -->
-                            <div class="col-md-6">
+                            <div class="col-md-5 mb-2">
                                 <label for="fecha_hora_ingreso" class="form-label">Fecha y Hora de Ingreso *</label>
                                 <input type="datetime-local" id="fecha_hora_ingreso" name="fecha_hora_ingreso" class="form-control" required>
                             </div>
-                            <!--  Lugar -->
-                            <div class="col-md-6">
+
+                             <!--  Lugar -->
+                            <div class="col-md-4 mb-2">
                                 <label for="lugar" class="form-label">Lugar</label>
                                 <select id="lugar" name="lugar" class="form-select">
                                     <option value="">Seleccione un lugar</option>
                                     <option value="Mesa de Entrada">Mesa de Entrada</option>
                                     <option value="Comision I">Comision I</option>
-                                    <option value="Comision I">Comision II</option>
-                                    <option value="Comision I">Comision III</option>
-                                    <option value="Comision I">Comision IV</option>
-                                    <option value="Comision I">Comision V</option>
-                                    <option value="Comision I">Comision VI</option>
-                                    <option value="Comision I">Comision VII</option>
-                                    <option value="Comision I">Archivo</option>
+                                    <option value="Comision II">Comision II</option>
+                                    <option value="Comision III">Comision III</option>
+                                    <option value="Comision IV">Comision IV</option>
+                                    <option value="Comision V">Comision V</option>
+                                    <option value="Comision VI">Comision VI</option>
+                                    <option value="Comision VII">Comision VII</option>
+                                    <option value="Archivo">Archivo</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="row g-4">
+
+                            
                             <!--  Extracto -->
-                            <div class="col-12">
+                            <div class="col-12 mb-2">
                                 <label for="extracto" class="form-label">Extracto</label>
                                 <textarea id="extracto" name="extracto" class="form-control" maxlength="300" rows="3" placeholder="Ingrese un extracto (máximo 300 caracteres)"></textarea>
                                 <div class="form-text">Máximo 300 caracteres.</div>
                             </div>
-                        </div>
-                        <div class="row g-4 mb-4">
-                            <!--  Iniciador -->
-                            <div class="col-12">
+
+                             <!--  Iniciador -->
+                            <div class="col-12 mb-2">
                                 <label for="iniciador" class="form-label">Iniciador</label>
                                 <input type="text" id="iniciador" name="iniciador" class="form-control">
                             </div>
+                        
+
+
+
+
+
+
+
+
+
+
+
                         </div>
+
+                        <div class="row g-4 mb-4">
+                           <h2>Actualizacion de Datos</h2>
+                        </div>
+
+                        
+
+                      
 
                         <!-- Botones de acción -->
                         <div class="d-flex justify-content-between mt-4">
@@ -148,31 +191,34 @@
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validar campos requeridos
-        const requeridos = form.querySelectorAll('[required]');
-        let valido = true;
-        
-        requeridos.forEach(campo => {
-            if (!campo.value.trim()) {
-                campo.classList.add('is-invalid');
-                valido = false;
-            } else {
-                campo.classList.remove('is-invalid');
-            }
-        });
-        
-        if (valido) {
-            form.submit();
-        }
-    });
-});
-</script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
 
-</html></body></body>
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Validar campos requeridos
+                const requeridos = form.querySelectorAll('[required]');
+                let valido = true;
+
+                requeridos.forEach(campo => {
+                    if (!campo.value.trim()) {
+                        campo.classList.add('is-invalid');
+                        valido = false;
+                    } else {
+                        campo.classList.remove('is-invalid');
+                    }
+                });
+
+                if (valido) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+
+</html>
+</body>
+</body>
+
 </html>

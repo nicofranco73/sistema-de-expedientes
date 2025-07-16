@@ -87,8 +87,6 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 
                     <div class="row g-3 my-1">
-
-
                         <!--  Numero-->
                         <div class="col-md-4">
                             <label for="numero" class="form-label">Número *</label>
@@ -129,14 +127,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                                 title="Solo números, máximo 6 dígitos"
                                 required>
                         </div>
-
-
-
-
-
                     </div>
-
-
                     <div class="row g-3 my-1">
 
                         <!--  Libro-->
@@ -152,7 +143,6 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                                 title="Solo números, máximo 6 dígitos"
                                 required>
                         </div>
-
                         <!--  Año-->
                         <div class="col-md-4">
                             <label for="anio" class="form-label">Año *</label>
@@ -164,8 +154,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                             </select>
                         </div>
                     </div>
-
-                    <!--  Captcha-->
+                    <div class="row g-3 my-1">
+                        <!--  Captcha-->
                     <div class="col-md-8">
                         <label for="captcha" class="form-label">Ingrese el código *</label>
                         <div class="d-flex align-items-center gap-2">
@@ -176,14 +166,19 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                                 maxlength="4"
                                 pattern="[A-Z0-9]{4}"
                                 autocomplete="off"
-
                                 oninput="this.value = this.value.toUpperCase();"
                                 required>
                             <span class="badge bg-secondary fs-5" style="letter-spacing:2px; user-select: none;"><?= e($captcha) ?></span>
                         </div>
                         <div class="form-text">Ingrese los 4 caracteres que ve en el recuadro exactamente como aparecen.</div>
                     </div>
+                    </div>
 
+
+
+
+
+                    
                     <div class="col-12 d-flex justify-content-end gap-2 mt-3">
                         <button type="submit" class="btn btn-primary px-4">
                             <i class="bi bi-search"></i> Buscar
@@ -192,24 +187,16 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                             <i class="bi bi-eraser"></i> Limpiar Campos
                         </button>
                     </div>
-
             </div>
-
             </form>
-
             <?php
             if (isset($_SESSION['error'])) {
                 echo "<div class='alert alert-danger'>" . e($_SESSION['error']) . "</div>";
                 unset($_SESSION['error']);
             }
             ?>
-
         </div>
-
     </div>
-
-
     </div>
 </body>
-
 </html>
