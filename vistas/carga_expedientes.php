@@ -39,7 +39,7 @@
                 <div class="main-box carga">
                     <h1 class="titulo-principal mb-4 text-center">Carga de Expediente</h1>
                     <form action="procesar_carga_expedientes.php" method="post" autocomplete="off">
-                        <div class="row g-3">
+                        <div class="row g-4">
                             <!--  Numero-->
                             <div class="col-md-6">
                                 <label for="numero" class="form-label">Número *</label>
@@ -78,8 +78,7 @@
                             </div>
                         </div>
 
-                        <div class="row g-3">
-
+                        <div class="row g-4">
                             <!--  Fecha y hora de ingreso -->
                             <div class="col-md-6">
                                 <label for="fecha_hora_ingreso" class="form-label">Fecha y Hora de Ingreso *</label>
@@ -92,23 +91,30 @@
                                     <option value="">Seleccione un lugar</option>
                                     <option value="Mesa de Entrada">Mesa de Entrada</option>
                                     <option value="Comision I">Comision I</option>
+                                    <option value="Comision I">Comision II</option>
+                                    <option value="Comision I">Comision III</option>
+                                    <option value="Comision I">Comision IV</option>
+                                    <option value="Comision I">Comision V</option>
+                                    <option value="Comision I">Comision VI</option>
+                                    <option value="Comision I">Comision VII</option>
+                                    <option value="Comision I">Archivo</option>
                                 </select>
                             </div>
-
-
-
-
-
                         </div>
-
-
-
-
-                        
-                        
-                        <div class="col-12">
-                            <label for="iniciador" class="form-label">Iniciador</label>
-                            <input type="text" id="iniciador" name="iniciador" class="form-control">
+                        <div class="row g-4">
+                            <!--  Extracto -->
+                            <div class="col-12">
+                                <label for="extracto" class="form-label">Extracto</label>
+                                <textarea id="extracto" name="extracto" class="form-control" maxlength="300" rows="3" placeholder="Ingrese un extracto (máximo 300 caracteres)"></textarea>
+                                <div class="form-text">Máximo 300 caracteres.</div>
+                            </div>
+                        </div>
+                        <div class="row g-4">
+                            <!--  Iniciador -->
+                            <div class="col-12">
+                                <label for="iniciador" class="form-label">Iniciador</label>
+                                <input type="text" id="iniciador" name="iniciador" class="form-control">
+                            </div>
                         </div>
                 </div>
                 <div class="d-flex justify-content-between mt-4">
