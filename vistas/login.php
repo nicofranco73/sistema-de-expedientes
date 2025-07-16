@@ -60,11 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn btn-login mt-3 w-100">
                     <i class="bi bi-door-open-fill"></i> Ingresar
                 </button>
-                <div class="text-center mt-3">
-                    <a href="recuperar_contrasena.php" class="login-link">
-                        <i class="bi bi-question-circle"></i> ¿Olvidó su contraseña?
-                    </a>
-                </div>
+                
             </form>
         </div>
     </div>
