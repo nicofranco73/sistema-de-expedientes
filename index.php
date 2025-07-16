@@ -5,7 +5,7 @@ session_regenerate_id(true);
 
 // Configurar headers de seguridad mejorados
 header('X-Frame-Options: DENY');
-header('X-Content-Type-Options: nosniff'); 
+header('X-Content-Type-Options: nosniff');
 header('X-XSS-Protection: 1; mode=block');
 header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net;");
@@ -13,7 +13,8 @@ header('Referrer-Policy: no-referrer');
 header('Permissions-Policy: geolocation=(), camera=()');
 
 // Función para escapar output de forma segura
-function e($str) {
+function e($str)
+{
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
@@ -49,14 +50,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     <meta name="robots" content="noindex, nofollow">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Consulta de Expedientes</title>
-    
+
     <!-- CSS con SRI hash -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
-          rel="stylesheet" 
-          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
-          crossorigin="anonymous">
-    <link rel="stylesheet" 
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+        crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="publico/css/estilos.css">
 
 </head>
@@ -75,44 +76,81 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                     Si tiene dudas, comuníquese con Mesa de Entradas al <strong>(03751) 424340</strong>.<br>
                     Complete el formulario para realizar su consulta sobre expedientes legislativos.
                 </p>
-                
+
                 <!-- Leyenda de campos requeridos -->
                 <p class="text-muted small mb-3">
                     <i class="bi bi-info-circle"></i> Los campos marcados con <span class="text-danger">*</span> son requeridos
                 </p>
-                
+
                 <form action="resultados_publico.php" method="post" autocomplete="off">
                     <!-- Campo oculto para CSRF -->
-                    
-                    
-                    <div class="row g-3">
+
+
+                    <div class="row g-3 my-1">
+
 
                         <!--  Numero-->
                         <div class="col-md-4">
                             <label for="numero" class="form-label">Número *</label>
-                            <input type="text" 
-                                   id="numero" 
-                                   name="numero" 
-                                   class="form-control" 
-                                   placeholder="Ej: 1234" 
-                                   pattern="[0-9]{1,6}"
-                                   maxlength="6"
-                                   title="Solo números, máximo 6 dígitos"
-                                   required>
+                            <input type="text"
+                                id="numero"
+                                name="numero"
+                                class="form-control"
+                                placeholder="Ej: 1234"
+                                pattern="[0-9]{1,6}"
+                                maxlength="6"
+                                title="Solo números, máximo 6 dígitos"
+                                required>
                         </div>
 
                         <!--  Letra-->
                         <div class="col-md-4">
                             <label for="letra" class="form-label">Letra *</label>
-                            <select id="letra" 
-                                    name="letra" 
-                                    class="form-select" 
-                                    required>
+                            <select id="letra"
+                                name="letra"
+                                class="form-select"
+                                required>
                                 <option value="">Elige una letra</option>
                                 <?php foreach (str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ') as $l): ?>
                                     <option value="<?= e($l) ?>"><?= e($l) ?></option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        <!--  Folio-->
+                        <div class="col-md-4">
+                            <label for="folio" class="form-label">Folio *</label>
+                            <input type="text"
+                                id="folio"
+                                name="folio"
+                                class="form-control"
+                                placeholder="Ej: 1234"
+                                pattern="[0-9]{1,6}"
+                                maxlength="6"
+                                title="Solo números, máximo 6 dígitos"
+                                required>
+                        </div>
+
+
+
+
+
+                    </div>
+
+
+                    <div class="row g-3 my-1">
+
+                        <!--  Libro-->
+                        <div class="col-md-4">
+                            <label for="libro" class="form-label">Libro *</label>
+                            <input type="text"
+                                id="libro"
+                                name="libro"
+                                class="form-control"
+                                placeholder="Ej: 1234"
+                                pattern="[0-9]{1,6}"
+                                maxlength="6"
+                                title="Solo números, máximo 6 dígitos"
+                                required>
                         </div>
 
                         <!--  Año-->
@@ -125,43 +163,51 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                                 <?php endfor; ?>
                             </select>
                         </div>
-
-                        <!--  Captcha-->
-                        <div class="col-md-8">
-                            <label for="captcha" class="form-label">Ingrese el código *</label>
-                            <div class="d-flex align-items-center gap-2">
-                                <input type="text" 
-                                    id="captcha" 
-                                    name="captcha" 
-                                    class="form-control text-uppercase" 
-                                    maxlength="4" 
-                                    pattern="[A-Z0-9]{4}" 
-                                    autocomplete="off"
-                                    style="text-transform:uppercase"
-                                    oninput="this.value = this.value.toUpperCase();"
-                                    required>
-                                <span class="badge bg-secondary fs-5" style="letter-spacing:2px; user-select: none;"><?= e($captcha) ?></span>
-                            </div>
-                            <div class="form-text">Ingrese los 4 caracteres que ve en el recuadro exactamente como aparecen.</div>
-                        </div>
-
-                        <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-search"></i> Buscar
-                            </button>
-                            <button type="reset" class="btn btn-outline-secondary px-4">
-                                <i class="bi bi-eraser"></i> Limpiar Campos
-                            </button>
-                        </div>
-                        
                     </div>
-                   
-                </form>
-                
+
+                    <!--  Captcha-->
+                    <div class="col-md-8">
+                        <label for="captcha" class="form-label">Ingrese el código *</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text"
+                                id="captcha"
+                                name="captcha"
+                                class="form-control "
+                                maxlength="4"
+                                pattern="[A-Z0-9]{4}"
+                                autocomplete="off"
+
+                                oninput="this.value = this.value.toUpperCase();"
+                                required>
+                            <span class="badge bg-secondary fs-5" style="letter-spacing:2px; user-select: none;"><?= e($captcha) ?></span>
+                        </div>
+                        <div class="form-text">Ingrese los 4 caracteres que ve en el recuadro exactamente como aparecen.</div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-eraser"></i> Limpiar Campos
+                        </button>
+                    </div>
+
             </div>
-            
+
+            </form>
+
+            <?php
+            if (isset($_SESSION['error'])) {
+                echo "<div class='alert alert-danger'>" . e($_SESSION['error']) . "</div>";
+                unset($_SESSION['error']);
+            }
+            ?>
+
         </div>
-        
+
+    </div>
+
 
     </div>
 </body>

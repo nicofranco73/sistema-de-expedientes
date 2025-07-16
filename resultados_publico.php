@@ -1,32 +1,142 @@
 <?php
+/**
+ * Resultados de búsqueda pública de expedientes
+ */
 
+// Iniciar sesión y configuración
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 
-// Verificar método POST
+// Función para escapar output
+function e($str) {
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
+// Validar método POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die('Método no permitido');
+    header('Location: index.php');
+    exit;
 }
 
-// Verificar token CSRF
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    die('Token de seguridad inválido');
+try {
+    // Validar campos requeridos
+    $campos_requeridos = ['numero', 'letra', 'anio', 'captcha'];
+    foreach ($campos_requeridos as $campo) {
+        if (empty($_POST[$campo])) {
+            throw new Exception("Todos los campos son requeridos");
+        }
+    }
+
+    // Validar CAPTCHA
+    if (!password_verify(strtoupper($_POST['captcha']), $_SESSION['captcha'])) {
+        throw new Exception("Código de verificación incorrecto");
+    }
+
+    // Sanitizar inputs
+    $numero = filter_var($_POST['numero'], FILTER_VALIDATE_INT);
+    $letra = strtoupper(substr($_POST['letra'], 0, 1));
+    $anio = filter_var($_POST['anio'], FILTER_VALIDATE_INT);
+
+    // Validar datos
+    if (!$numero || !preg_match('/^[A-Z]$/', $letra) || !($anio >= 1973 && $anio <= 2030)) {
+        throw new Exception("Datos de búsqueda inválidos");
+    }
+
+    // Conectar a la base de datos
+    $db = new PDO(
+        "mysql:host=localhost;dbname=expedientes;charset=utf8mb4",
+        "root",
+        "",
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+
+    // Consultar expediente
+    $sql = "SELECT * FROM expedientes 
+            WHERE numero = :numero 
+            AND letra = :letra 
+            AND anio = :anio 
+            LIMIT 1";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':numero' => $numero,
+        ':letra' => $letra,
+        ':anio' => $anio
+    ]);
+
+    $expediente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Limpiar CAPTCHA usado
+    unset($_SESSION['captcha']);
+
+} catch (Exception $e) {
+    $_SESSION['error'] = $e->getMessage();
+    header('Location: index.php');
+    exit;
 }
+?>
 
-// Validar captcha
-if (!isset($_POST['captcha']) || !password_verify(strtoupper($_POST['captcha']), $_SESSION['captcha'])) {
-    die('Código de verificación incorrecto');
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados de la Consulta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="publico/css/estilos.css">
+</head>
+<body>
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <img src="publico/imagen/LOGOCDE.png" alt="Logo" style="height:116px;">
+            <h2 class="titulo-principal mt-2">Resultado de la Consulta</h2>
+        </div>
 
-// Validar campos
-$numero = filter_input(INPUT_POST, 'numero', FILTER_VALIDATE_INT);
-$letra = filter_input(INPUT_POST, 'letra', FILTER_SANITIZE_STRING);
-$anio = filter_input(INPUT_POST, 'anio', FILTER_VALIDATE_INT);
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-4">
+                    Expediente N° <?= e($numero) ?>/<?= e($letra) ?>/<?= e($anio) ?>
+                </h3>
 
-if (!$numero || !preg_match('/^[A-Z]$/', $letra) || !($anio >= 2000 && $anio <= 2099)) {
-    die('Datos inválidos');
-}
+                <?php if ($expediente): ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 200px">Fecha de Ingreso:</th>
+                                    <td><?= date('d/m/Y H:i', strtotime($expediente['fecha_hora_ingreso'])) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Ubicación Actual:</th>
+                                    <td><?= e($expediente['lugar']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Extracto:</th>
+                                    <td><?= e($expediente['extracto']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Iniciador:</th>
+                                    <td><?= e($expediente['iniciador']) ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        No se encontró el expediente solicitado
+                    </div>
+                <?php endif; ?>
 
-// Regenerar token y captcha
-session_regenerate_id(true);
-$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-
-// Continuar con el procesamiento...
+                <div class="mt-4">
+                    <a href="index.php" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Nueva Consulta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
