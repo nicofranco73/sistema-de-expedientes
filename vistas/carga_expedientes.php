@@ -38,6 +38,19 @@
             <main class="col-12 col-md-10 ms-sm-auto px-4 main-dashboard">
                 <div class="main-box carga">
                     <h1 class="titulo-principal mb-4 text-center">Carga de Expediente</h1>
+                    <?php
+                    session_start();
+
+                    // Después del h1 del formulario
+                    if (isset($_SESSION['mensaje'])) {
+                        $tipo = $_SESSION['tipo_mensaje'] ?? 'info';
+                        echo "<div class='alert alert-{$tipo} alert-dismissible fade show' role='alert'>";
+                        echo htmlspecialchars($_SESSION['mensaje']);
+                        echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
+                        echo "</div>";
+                        unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
+                    }
+                    ?>
                     <form action="procesar_carga_expedientes.php" method="post" autocomplete="off">
                         <div class="row g-4">
                             <!--  Numero-->
@@ -109,27 +122,57 @@
                                 <div class="form-text">Máximo 300 caracteres.</div>
                             </div>
                         </div>
-                        <div class="row g-4">
+                        <div class="row g-4 mb-4">
                             <!--  Iniciador -->
                             <div class="col-12">
                                 <label for="iniciador" class="form-label">Iniciador</label>
                                 <input type="text" id="iniciador" name="iniciador" class="form-control">
                             </div>
                         </div>
-                </div>
-                <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save"></i> Guardar
-                    </button>
-                    <button type="reset" class="btn btn-outline-secondary">
-                        <i class="bi bi-eraser"></i> Limpiar Campos
-                    </button>
-                </div>
-                </form>
-        </div>
-        </main>
-    </div>
-    </div>
-</body>
 
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Guardar
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary">
+                                <i class="bi bi-eraser"></i> Limpiar Campos
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar campos requeridos
+        const requeridos = form.querySelectorAll('[required]');
+        let valido = true;
+        
+        requeridos.forEach(campo => {
+            if (!campo.value.trim()) {
+                campo.classList.add('is-invalid');
+                valido = false;
+            } else {
+                campo.classList.remove('is-invalid');
+            }
+        });
+        
+        if (valido) {
+            form.submit();
+        }
+    });
+});
+</script>
+
+</html></body></body>
 </html>
