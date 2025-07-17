@@ -1,64 +1,33 @@
 
 <?php
 /**
- * Procesamiento del formulario de carga de expedientes
+ * Procesamiento de carga de expedientes
  */
 
-// Iniciar sesión y verificar autenticación
 session_start();
 
-
-// Configurar manejo de errores
+// Configuración de errores
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
 // Función para sanear inputs
 function sanear_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
+    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
 }
 
 try {
     // Validar método POST
-    if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    if ($_SERVER["REQUEST_METHOD"] !== "POST") {
         throw new Exception("Método no permitido");
     }
 
     // Validar campos requeridos
-    $campos_requeridos = ['numero', 'letra', 'anio', 'fecha_hora_ingreso'];
+    $campos_requeridos = ['numero', 'letra', 'folio', 'libro', 'anio', 'fecha_hora_ingreso'];
     foreach ($campos_requeridos as $campo) {
         if (empty($_POST[$campo])) {
             throw new Exception("El campo $campo es requerido");
         }
     }
-
-    // Sanear y validar inputs
-    $numero = filter_var($_POST['numero'], FILTER_VALIDATE_INT);
-    if (!$numero || $numero < 1) {
-        throw new Exception("Número de expediente inválido");
-    }
-
-    $letra = sanear_input($_POST['letra']);
-    if (!preg_match("/^[A-Z]$/", $letra)) {
-        throw new Exception("Letra inválida");
-    }
-
-    $anio = filter_var($_POST['anio'], FILTER_VALIDATE_INT);
-    if (!$anio || $anio < 1973 || $anio > 2030) {
-        throw new Exception("Año inválido");
-    }
-
-    $fecha_hora_ingreso = sanear_input($_POST['fecha_hora_ingreso']);
-    if (!strtotime($fecha_hora_ingreso)) {
-        throw new Exception("Fecha y hora inválidas");
-    }
-
-    // Campos opcionales
-    $lugar = sanear_input($_POST['lugar'] ?? '');
-    $extracto = sanear_input($_POST['extracto'] ?? '');
-    $iniciador = sanear_input($_POST['iniciador'] ?? '');
 
     // Conectar a la base de datos
     $db = new PDO(
@@ -68,52 +37,70 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 
-    // Preparar la consulta
-    $sql = "INSERT INTO expedientes (numero, letra, anio, fecha_hora_ingreso, lugar, extracto, iniciador) 
-            VALUES (:numero, :letra, :anio, :fecha_hora_ingreso, :lugar, :extracto, :iniciador)";
-    
-    $stmt = $db->prepare($sql);
-    
-    // Ejecutar la consulta
-    $resultado = $stmt->execute([
-        ':numero' => $numero,
-        ':letra' => $letra,
-        ':anio' => $anio,
-        ':fecha_hora_ingreso' => $fecha_hora_ingreso,
-        ':lugar' => $lugar,
-        ':extracto' => $extracto,
-        ':iniciador' => $iniciador
-    ]);
+    // Iniciar transacción
+    $db->beginTransaction();
 
-    if ($resultado) {
-        $_SESSION['mensaje'] = "Expediente guardado correctamente";
-        $_SESSION['tipo_mensaje'] = "success";
-    } else {
-        throw new Exception("Error al guardar el expediente");
+    // Preparar datos
+    $data = [
+        'numero' => filter_var($_POST['numero'], FILTER_VALIDATE_INT),
+        'letra' => sanear_input($_POST['letra']),
+        'folio' => filter_var($_POST['folio'], FILTER_VALIDATE_INT),
+        'libro' => filter_var($_POST['libro'], FILTER_VALIDATE_INT),
+        'anio' => filter_var($_POST['anio'], FILTER_VALIDATE_INT),
+        'fecha_hora_ingreso' => sanear_input($_POST['fecha_hora_ingreso']),
+        'lugar' => sanear_input($_POST['lugar'] ?? ''),
+        'extracto' => sanear_input($_POST['extracto'] ?? ''),
+        'iniciador' => sanear_input($_POST['iniciador'] ?? '')
+    ];
+
+    // Validar datos
+    if (!$data['numero'] || !$data['folio'] || !$data['libro'] || !$data['anio']) {
+        throw new Exception("Datos numéricos inválidos");
     }
 
-    // Redireccionar
-    header("Location: carga_expedientes.php");
-    exit;
+    if (!preg_match('/^[A-Z]$/', $data['letra'])) {
+        throw new Exception("Letra inválida");
+    }
+
+    // Insertar expediente
+    $sql = "INSERT INTO expedientes (
+                numero, letra, folio, libro, anio, 
+                fecha_hora_ingreso, lugar, extracto, iniciador
+            ) VALUES (
+                :numero, :letra, :folio, :libro, :anio,
+                :fecha_hora_ingreso, :lugar, :extracto, :iniciador
+            )";
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($data);
+
+    // Confirmar transacción
+    $db->commit();
+
+    $_SESSION['mensaje'] = "Expediente guardado correctamente";
+    $_SESSION['tipo_mensaje'] = "success";
 
 } catch (PDOException $e) {
-    // Error de base de datos
+    // Revertir transacción
+    if (isset($db) && $db->inTransaction()) {
+        $db->rollBack();
+    }
+
     error_log("Error DB: " . $e->getMessage());
     
     if ($e->getCode() == 23000) { // Error de duplicado
-        $_SESSION['mensaje'] = "El expediente ya existe";
+        $_SESSION['mensaje'] = "El expediente ya existe en el sistema";
     } else {
-        $_SESSION['mensaje'] = "Error al procesar la solicitud";
+        $_SESSION['mensaje'] = "Error al guardar el expediente";
     }
     $_SESSION['tipo_mensaje'] = "danger";
-    
+
 } catch (Exception $e) {
-    // Otros errores
     error_log("Error: " . $e->getMessage());
     $_SESSION['mensaje'] = $e->getMessage();
     $_SESSION['tipo_mensaje'] = "danger";
 }
 
-// Redireccionar en caso de error
+// Redireccionar
 header("Location: carga_expedientes.php");
 exit;

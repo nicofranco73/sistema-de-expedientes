@@ -1,3 +1,21 @@
+
+<?php
+session_start();
+
+// Después del h1 del formulario
+if (isset($_SESSION['mensaje'])) {
+    $tipo = $_SESSION['tipo_mensaje'] ?? 'info';
+    echo "<div class='alert alert-{$tipo} alert-dismissible fade show' role='alert'>";
+    echo htmlspecialchars($_SESSION['mensaje']);
+    echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
+    echo "</div>";
+    unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 

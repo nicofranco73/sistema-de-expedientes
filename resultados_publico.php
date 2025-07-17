@@ -21,26 +21,31 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Validar campos requeridos
-    $campos_requeridos = ['numero', 'letra', 'anio', 'captcha'];
+    $campos_requeridos = ['numero', 'letra', 'folio', 'libro', 'anio', 'captcha'];
     foreach ($campos_requeridos as $campo) {
         if (empty($_POST[$campo])) {
             throw new Exception("Todos los campos son requeridos");
         }
     }
 
-    // Validar CAPTCHA
-    if (!password_verify(strtoupper($_POST['captcha']), $_SESSION['captcha'])) {
-        throw new Exception("Código de verificación incorrecto");
-    }
-
-    // Sanitizar inputs
+    // Sanitizar y validar inputs
     $numero = filter_var($_POST['numero'], FILTER_VALIDATE_INT);
     $letra = strtoupper(substr($_POST['letra'], 0, 1));
+    $folio = filter_var($_POST['folio'], FILTER_VALIDATE_INT);
+    $libro = filter_var($_POST['libro'], FILTER_VALIDATE_INT);
     $anio = filter_var($_POST['anio'], FILTER_VALIDATE_INT);
 
     // Validar datos
-    if (!$numero || !preg_match('/^[A-Z]$/', $letra) || !($anio >= 1973 && $anio <= 2030)) {
-        throw new Exception("Datos de búsqueda inválidos");
+    if (!$numero || !$folio || !$libro || !$anio) {
+        throw new Exception("Los campos numéricos son inválidos");
+    }
+    
+    if (!preg_match('/^[A-Z]$/', $letra)) {
+        throw new Exception("Letra inválida");
+    }
+    
+    if ($anio < 1973 || $anio > 2030) {
+        throw new Exception("Año fuera de rango permitido");
     }
 
     // Conectar a la base de datos
@@ -55,6 +60,8 @@ try {
     $sql = "SELECT * FROM expedientes 
             WHERE numero = :numero 
             AND letra = :letra 
+            AND folio = :folio 
+            AND libro = :libro 
             AND anio = :anio 
             LIMIT 1";
 
@@ -62,6 +69,8 @@ try {
     $stmt->execute([
         ':numero' => $numero,
         ':letra' => $letra,
+        ':folio' => $folio,
+        ':libro' => $libro,
         ':anio' => $anio
     ]);
 
@@ -98,6 +107,10 @@ try {
             <div class="card-body">
                 <h3 class="card-title mb-4">
                     Expediente N° <?= e($numero) ?>/<?= e($letra) ?>/<?= e($anio) ?>
+                    <br>
+                    <small class="text-muted">
+                        Folio: <?= e($folio) ?> - Libro: <?= e($libro) ?>
+                    </small>
                 </h3>
 
                 <?php if ($expediente): ?>
@@ -105,7 +118,27 @@ try {
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
-                                    <th style="width: 200px">Fecha de Ingreso:</th>
+                                    <th style="width: 200px">Número:</th>
+                                    <td><?= e($expediente['numero']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Letra:</th>
+                                    <td><?= e($expediente['letra']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Folio:</th>
+                                    <td><?= e($expediente['folio']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Libro:</th>
+                                    <td><?= e($expediente['libro']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Año:</th>
+                                    <td><?= e($expediente['anio']) ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de Ingreso:</th>
                                     <td><?= date('d/m/Y H:i', strtotime($expediente['fecha_hora_ingreso'])) ?></td>
                                 </tr>
                                 <tr>
