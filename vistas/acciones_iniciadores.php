@@ -62,12 +62,10 @@ session_start();
                                         <div class="card role-card h-100 shadow-sm hover-card">
                                             <div class="card-body p-4">
                                                 <div class="role-icon mb-3">
-                                                    <i class="bi bi-plus-circle fs-1"></i>
+                                                    <i class="bi bi-person fs-1"></i>
                                                 </div>
-                                                <h3 class="h4 fw-bold mb-2">Nuevo Expediente</h3>
-                                                <p class="text-secondary mb-0">
-                                                    Cargar un nuevo expediente al sistema
-                                                </p>
+                                                <h3 class="h4 fw-bold mb-2">Persona Física</h3>
+                                               
                                             </div>
                                         </div>
                                     </a>
@@ -75,16 +73,28 @@ session_start();
 
                                 <!-- Tarjeta Usuario Público -->
                                 <div class="col-12 col-md-5">
-                                    <a href="actualizar_expedientes.php" class="text-decoration-none">
+                                    <a href="../index.php" class="text-decoration-none">
                                         <div class="card role-card h-100 shadow-sm hover-card">
                                             <div class="card-body p-4">
                                                 <div class="role-icon mb-3">
-                                                    <i class="bi bi-list-task fs-1"></i>
+                                                    <i class="bi bi-person-vcard fs-1"></i>
                                                 </div>
-                                                <h3 class="h4 fw-bold mb-2">Listar Expedientes</h3>
-                                                <p class="text-secondary mb-0">
-                                                    Ver todos los expedientes existentes
-                                                </p>
+                                                <h3 class="h4 fw-bold mb-2">Persona Juridica / Entidad</h3>
+                                               
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div class="col-12 col-md-5">
+                                    <a href="../index.php" class="text-decoration-none">
+                                        <div class="card role-card h-100 shadow-sm hover-card">
+                                            <div class="card-body p-4">
+                                                <div class="role-icon mb-3">
+                                                    <i class="bi bi-person-workspace fs-1"></i>
+                                                </div>
+                                                <h3 class="h4 fw-bold mb-2">Concejal</h3>
+                                                
                                             </div>
                                         </div>
                                     </a>

@@ -8,7 +8,7 @@
                         <a class="nav-link" href="/expedientes/vistas/acciones_expedientes.php"><i class="bi bi-file-earmark-plus me-2"></i>Expedientes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/carga_iniciador.php"><i class="bi bi-person-plus me-2"></i>Iniciadores</a>
+                        <a class="nav-link" href="/expedientes/vistas/acciones_iniciadores.php"><i class="bi bi-person-plus me-2"></i>Iniciadores</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/expedientes/vistas/consulta.php"><i class="bi bi-search me-2"></i>Consulta de Expedientes</a>
