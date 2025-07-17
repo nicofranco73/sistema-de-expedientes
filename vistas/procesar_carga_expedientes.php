@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Procesamiento de carga de expedientes
@@ -22,11 +21,20 @@ try {
     }
 
     // Validar campos requeridos
-    $campos_requeridos = ['numero', 'letra', 'folio', 'libro', 'anio', 'fecha_hora_ingreso'];
+    $campos_requeridos = [
+        'numero', 'letra', 'folio', 'libro', 'anio', 
+        'fecha_hora_ingreso', 'lugar', 'extracto', 'iniciador'
+    ];
+
     foreach ($campos_requeridos as $campo) {
         if (empty($_POST[$campo])) {
-            throw new Exception("El campo $campo es requerido");
+            throw new Exception("Todos los campos son obligatorios");
         }
+    }
+
+    // Validar longitud del extracto
+    if (strlen($_POST['extracto']) > 300) {
+        throw new Exception("El extracto no puede superar los 300 caracteres");
     }
 
     // Conectar a la base de datos

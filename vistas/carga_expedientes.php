@@ -140,33 +140,46 @@
 
                             <!--  Lugar -->
                             <div class="col-md-4 mb-2">
-                                <label for="lugar" class="form-label">Lugar</label>
-                                <select id="lugar" name="lugar" class="form-select">
+                                <label for="lugar" class="form-label">Lugar *</label>
+                                <select id="lugar" name="lugar" class="form-select" required>
                                     <option value="">Seleccione un lugar</option>
                                     <option value="Mesa de Entrada">Mesa de Entrada</option>
-                                    <option value="Comision I">Comision I</option>
-                                    <option value="Comision II">Comision II</option>
-                                    <option value="Comision III">Comision III</option>
-                                    <option value="Comision IV">Comision IV</option>
-                                    <option value="Comision V">Comision V</option>
-                                    <option value="Comision VI">Comision VI</option>
-                                    <option value="Comision VII">Comision VII</option>
+                                    <option value="Comision I">Comisión I</option>
+                                    <option value="Comision II">Comisión II</option>
+                                    <option value="Comision III">Comisión III</option>
+                                    <option value="Comision IV">Comisión IV</option>
+                                    <option value="Comision V">Comisión V</option>
+                                    <option value="Comision VI">Comisión VI</option>
+                                    <option value="Comision VII">Comisión VII</option>
                                     <option value="Archivo">Archivo</option>
                                 </select>
+                                <div class="invalid-feedback">Por favor seleccione un lugar</div>
                             </div>
 
 
                             <!--  Extracto -->
                             <div class="col-12 mb-2">
-                                <label for="extracto" class="form-label">Extracto</label>
-                                <textarea id="extracto" name="extracto" class="form-control" maxlength="300" rows="3" placeholder="Ingrese un extracto (máximo 300 caracteres)"></textarea>
+                                <label for="extracto" class="form-label">Extracto *</label>
+                                <textarea id="extracto" 
+                                          name="extracto" 
+                                          class="form-control" 
+                                          maxlength="300" 
+                                          rows="3" 
+                                          placeholder="Ingrese un extracto (máximo 300 caracteres)"
+                                          required></textarea>
                                 <div class="form-text">Máximo 300 caracteres.</div>
+                                <div class="invalid-feedback">Por favor ingrese un extracto</div>
                             </div>
 
                             <!--  Iniciador -->
                             <div class="col-12 mb-2">
-                                <label for="iniciador" class="form-label">Iniciador</label>
-                                <input type="text" id="iniciador" name="iniciador" class="form-control">
+                                <label for="iniciador" class="form-label">Iniciador *</label>
+                                <input type="text" 
+                                       id="iniciador" 
+                                       name="iniciador" 
+                                       class="form-control"
+                                       required>
+                                <div class="invalid-feedback">Por favor ingrese el iniciador</div>
                             </div>
 
 
@@ -182,9 +195,7 @@
 
                         </div>
 
-                        <div class="row g-4 mb-4">
-                            <h2>Actualizacion de Datos</h2>
-                        </div>
+                       
 
 
 
@@ -210,6 +221,14 @@
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
+    const MAX_EXTRACTO = 300;
+
+    // Contador de caracteres para el extracto
+    const extracto = document.getElementById('extracto');
+    extracto.addEventListener('input', function() {
+        const remaining = MAX_EXTRACTO - this.value.length;
+        this.nextElementSibling.textContent = `Caracteres restantes: ${remaining}`;
+    });
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -221,11 +240,19 @@ document.addEventListener('DOMContentLoaded', function() {
         requeridos.forEach(campo => {
             if (!campo.value.trim()) {
                 campo.classList.add('is-invalid');
-                camposFaltantes.push(campo.previousElementSibling.textContent.replace('*', '').trim());
+                const label = campo.previousElementSibling.textContent.replace('*', '').trim();
+                camposFaltantes.push(label);
             } else {
                 campo.classList.remove('is-invalid');
             }
         });
+
+        // Validación específica para el extracto
+        const extractoValue = extracto.value.trim();
+        if (extractoValue.length > MAX_EXTRACTO) {
+            extracto.classList.add('is-invalid');
+            camposFaltantes.push(`Extracto (máximo ${MAX_EXTRACTO} caracteres)`);
+        }
 
         if (camposFaltantes.length > 0) {
             Swal.fire({
@@ -235,23 +262,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'Entendido',
                 confirmButtonColor: '#0d6efd'
             });
-        } else {
-            // Confirmar envío
-            Swal.fire({
-                title: '¿Desea guardar el expediente?',
-                text: 'Verifique que los datos sean correctos',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#0d6efd',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, guardar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
+            return;
         }
+
+        // Confirmar envío
+        Swal.fire({
+            title: '¿Desea guardar el expediente?',
+            text: 'Verifique que los datos sean correctos',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
     });
 
     // Para el botón de reset
@@ -271,8 +299,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.isConfirmed) {
                 form.reset();
                 form.classList.remove('was-validated');
-                const invalidos = form.querySelectorAll('.is-invalid');
-                invalidos.forEach(campo => campo.classList.remove('is-invalid'));
+                document.querySelectorAll('.is-invalid').forEach(campo => {
+                    campo.classList.remove('is-invalid');
+                });
+                extracto.nextElementSibling.textContent = `Máximo ${MAX_EXTRACTO} caracteres.`;
             }
         });
     });

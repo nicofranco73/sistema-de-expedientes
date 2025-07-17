@@ -106,7 +106,7 @@ try {
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title mb-4">
-                    Expediente N°:  <?= e($numero) ?>/<?= e($letra) ?>/<?= e($folio) ?>/<?= e($libro) ?>/<?= e($anio) ?>
+                    Expediente N°:  <?= e($numero) ?>/<?= e($letra) ?>/<?= e($folio) ?>/<?= e($libro) ?><?= e($anio) ?>
                     
                 </h3>
 
