@@ -77,7 +77,7 @@ $usuario_nombre = $_SESSION['usuario_nombre'] ?? 'Admin';
                         <h1 class="titulo-principal mb-4 text-center">Consulta de Expediente</h1>
                         <p class="mb-4 text-center">
                             Este sistema permite consultar el estado de expedientes ingresados en el <strong>Concejo Deliberante de Eldorado</strong>.<br>
-                            Si tiene dudas, comuníquese con Mesa de Entradas al <strong>(03751) 423888</strong>.<br>
+                            Si tiene dudas, comuníquese con Mesa de Entradas al <strong>(03751) 424340</strong>.<br>
                             Complete el formulario para realizar su consulta sobre expedientes legislativos.
                         </p>
                         <!-- FORMULARIO -->
