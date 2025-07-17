@@ -50,26 +50,11 @@ $usuario_nombre = $_SESSION['usuario_nombre'] ?? 'Admin';
     </nav>
     <div class="container-fluid">
         <div class="row">
+
             <!-- Sidebar -->
-            <nav class="sidebar-dashboard col-12 col-md-2 d-md-block sidebar px-0 py-4">
-                <div class="text-center mb-4">
-                    <span class="fs-4 fw-bold logo-dashboard">Expedientes</span>
-                </div>
-                <ul class="nav flex-column gap-1 menu-dashboard">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/dashboard.php"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/carga_expedientes.php"><i class="bi bi-archive me-2"></i>Carga de Expediente</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/carga_iniciador.php"><i class="bi bi-person-plus me-2"></i>Carga de Iniciador</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/expedientes/vistas/consulta.php"><i class="bi bi-list-task me-2"></i>Consulta</a>
-                    </li>
-                </ul>
-            </nav>
+           <?php require '../vistas/sidebar.php'; ?>
+            <!-- Sidebar -->
+             
             <!-- Main Content -->
             <main class="col-12 col-md-10 ms-sm-auto px-4 main-dashboard d-flex align-items-center justify-content-center" style="min-height: 85vh;">
                 <div class="card card-form-centered w-100">

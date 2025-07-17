@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Carga de Expediente</title>
@@ -7,8 +8,12 @@
     <!-- Bootstrap CSS + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
 </head>
+
 <body>
     <!-- HEADER CON LOGO (igual que dashboard) -->
     <nav class="navbar navbar-expand-lg header-dashboard shadow-sm py-3">
@@ -25,57 +30,167 @@
     </nav>
     <div class="container-fluid">
         <div class="row">
+
+
             <!-- Sidebar -->
-            <nav class="sidebar-dashboard col-12 col-md-2 d-md-block sidebar px-0 py-4">
-                <div class="text-center mb-4">
-                    <span class="fs-4 fw-bold logo-dashboard">Expedientes</span>
-                </div>
-                <ul class="nav flex-column gap-1 menu-dashboard">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/dashboard.php"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/expedientes/vistas/carga_expedientes.php"><i class="bi bi-archive me-2"></i>Carga de Expediente</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/carga_iniciador.php"><i class="bi bi-person-plus me-2"></i>Carga de Iniciador</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expedientes/vistas/resultados.php"><i class="bi bi-list-task me-2"></i>Resultados</a>
-                    </li>
-                </ul>
-            </nav>
+            <?php require '../vistas/sidebar.php'; ?>
+            <!-- Sidebar -->
+
+
             <!-- Main Content -->
             <main class="col-12 col-md-10 ms-sm-auto px-4 main-dashboard">
                 <div class="main-box carga">
                     <h1 class="titulo-principal mb-4 text-center">Carga de Expediente</h1>
+                    <?php
+                    session_start();
+
+                    if (isset($_SESSION['mensaje'])) {
+                        $tipo = $_SESSION['tipo_mensaje'] ?? 'info';
+                        // Convertir tipo de Bootstrap a SweetAlert2
+                        $icon = match($tipo) {
+                            'success' => 'success',
+                            'danger' => 'error',
+                            'warning' => 'warning',
+                            default => 'info'
+                        };
+                        ?>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                Swal.fire({
+                                    title: '<?= htmlspecialchars($_SESSION['mensaje']) ?>',
+                                    icon: '<?= $icon ?>',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#0d6efd'
+                                });
+                            });
+                        </script>
+                        <?php
+                        unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
+                    }
+                    ?>
                     <form action="procesar_carga_expedientes.php" method="post" autocomplete="off">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="numero" class="form-label">Número de Expediente</label>
-                                <input type="text" id="numero" name="numero" class="form-control" required>
+                        <div class="row g-7 mb-4">
+                            <!--  Numero-->
+                            <div class="col-md-4 mb-2">
+                                <label for="numero" class="form-label">Número *</label>
+                                <input type="text"
+                                    id="numero"
+                                    name="numero"
+                                    class="form-control"
+                                    placeholder="Ej: 1234"
+                                    pattern="[0-9]{1,6}"
+                                    maxlength="6"
+                                    title="Solo números, máximo 6 dígitos"
+                                    required>
                             </div>
-                            <div class="col-md-3">
-                                <label for="letra" class="form-label">Letra</label>
-                                <input type="text" id="letra" name="letra" class="form-control" maxlength="1">
+                            <!--  Letra-->
+                            <div class="col-md-4 mb-2">
+                                <label for="letra" class="form-label">Letra *</label>
+                                <select id="letra"
+                                    name="letra"
+                                    class="form-select"
+                                    required>
+                                    <option value="">Elige una letra</option>
+                                    <?php foreach (str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ') as $l): ?>
+                                        <option value="<?= htmlspecialchars($l, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($l, ENT_QUOTES, 'UTF-8') ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
-                            <div class="col-md-3">
-                                <label for="anio" class="form-label">Año</label>
-                                <input type="number" id="anio" name="anio" class="form-control" required min="1900" max="2100">
+                            <!--  Folio-->
+                            <div class="col-md-4 mb-2">
+                                <label for="folio" class="form-label">Folio *</label>
+                                <input type="text"
+                                    id="folio"
+                                    name="folio"
+                                    class="form-control"
+                                    placeholder="Ej: 1234"
+                                    pattern="[0-9]{1,6}"
+                                    maxlength="6"
+                                    title="Solo números, máximo 6 dígitos"
+                                    required>
                             </div>
-                            <div class="col-md-6">
-                                <label for="fecha_ingreso" class="form-label">Fecha Ingreso</label>
-                                <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="form-control" required>
+                            <!--  Libro-->
+                            <div class="col-md-4 mb-2">
+                                <label for="libro" class="form-label">Libro *</label>
+                                <input type="text"
+                                    id="libro"
+                                    name="libro"
+                                    class="form-control"
+                                    placeholder="Ej: 1234"
+                                    pattern="[0-9]{1,6}"
+                                    maxlength="6"
+                                    title="Solo números, máximo 6 dígitos"
+                                    required>
                             </div>
-                            <div class="col-md-6">
+                            <!--  Año-->
+                            <div class="col-md-3 mb-2">
+                                <label for="anio" class="form-label">Año *</label>
+                                <select id="anio" name="anio" class="form-select" required>
+                                    <option value="">Elige un año</option>
+                                    <?php for ($y = 1973; $y <= 2030; $y++): ?>
+                                        <option value="<?= htmlspecialchars($y, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($y, ENT_QUOTES, 'UTF-8') ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <!--  Fecha y hora de ingreso -->
+                            <div class="col-md-5 mb-2">
+                                <label for="fecha_hora_ingreso" class="form-label">Fecha y Hora de Ingreso *</label>
+                                <input type="datetime-local" id="fecha_hora_ingreso" name="fecha_hora_ingreso" class="form-control" required>
+                            </div>
+
+                            <!--  Lugar -->
+                            <div class="col-md-4 mb-2">
                                 <label for="lugar" class="form-label">Lugar</label>
-                                <input type="text" id="lugar" name="lugar" class="form-control">
+                                <select id="lugar" name="lugar" class="form-select">
+                                    <option value="">Seleccione un lugar</option>
+                                    <option value="Mesa de Entrada">Mesa de Entrada</option>
+                                    <option value="Comision I">Comision I</option>
+                                    <option value="Comision II">Comision II</option>
+                                    <option value="Comision III">Comision III</option>
+                                    <option value="Comision IV">Comision IV</option>
+                                    <option value="Comision V">Comision V</option>
+                                    <option value="Comision VI">Comision VI</option>
+                                    <option value="Comision VII">Comision VII</option>
+                                    <option value="Archivo">Archivo</option>
+                                </select>
                             </div>
-                            <div class="col-12">
+
+
+                            <!--  Extracto -->
+                            <div class="col-12 mb-2">
+                                <label for="extracto" class="form-label">Extracto</label>
+                                <textarea id="extracto" name="extracto" class="form-control" maxlength="300" rows="3" placeholder="Ingrese un extracto (máximo 300 caracteres)"></textarea>
+                                <div class="form-text">Máximo 300 caracteres.</div>
+                            </div>
+
+                            <!--  Iniciador -->
+                            <div class="col-12 mb-2">
                                 <label for="iniciador" class="form-label">Iniciador</label>
                                 <input type="text" id="iniciador" name="iniciador" class="form-control">
                             </div>
+
+
+
+
+
+
+
+
+
+
+
+
                         </div>
+
+                        <div class="row g-4 mb-4">
+                            <h2>Actualizacion de Datos</h2>
+                        </div>
+
+
+
+
+
+                        <!-- Botones de acción -->
                         <div class="d-flex justify-content-between mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Guardar
@@ -89,5 +204,83 @@
             </main>
         </div>
     </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Validar campos requeridos
+        const requeridos = form.querySelectorAll('[required]');
+        let camposFaltantes = [];
+
+        requeridos.forEach(campo => {
+            if (!campo.value.trim()) {
+                campo.classList.add('is-invalid');
+                camposFaltantes.push(campo.previousElementSibling.textContent.replace('*', '').trim());
+            } else {
+                campo.classList.remove('is-invalid');
+            }
+        });
+
+        if (camposFaltantes.length > 0) {
+            Swal.fire({
+                title: 'Campos requeridos',
+                html: `Por favor complete los siguientes campos:<br><br>${camposFaltantes.join('<br>')}`,
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#0d6efd'
+            });
+        } else {
+            // Confirmar envío
+            Swal.fire({
+                title: '¿Desea guardar el expediente?',
+                text: 'Verifique que los datos sean correctos',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    });
+
+    // Para el botón de reset
+    const btnReset = form.querySelector('button[type="reset"]');
+    btnReset.addEventListener('click', (e) => {
+        e.preventDefault();
+        Swal.fire({
+            title: '¿Limpiar formulario?',
+            text: 'Se borrarán todos los datos ingresados',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, limpiar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.reset();
+                form.classList.remove('was-validated');
+                const invalidos = form.querySelectorAll('.is-invalid');
+                invalidos.forEach(campo => campo.classList.remove('is-invalid'));
+            }
+        });
+    });
+});
+</script>
+
+</html>
 </body>
+</body>
+
 </html>
