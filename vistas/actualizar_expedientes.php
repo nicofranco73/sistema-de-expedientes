@@ -1,39 +1,47 @@
 <?php
 session_start();
+
 define('MAX_EXTRACTO', 300);
-// Obtener el expediente por ID
-if (isset($_GET['id'])) {
-    try {
-        $db = new PDO(
-            "mysql:host=localhost;dbname=expedientes;charset=utf8mb4",
-            "root",
-            "",
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-        );
 
-        $stmt = $db->prepare("SELECT * FROM expedientes WHERE id = ?");
-        $stmt->execute([$_GET['id']]);
-        $expediente = $stmt->fetch(PDO::FETCH_ASSOC);
+// Agregar al inicio del archivo, después de session_start()
+error_log('ID recibido: ' . print_r($_GET, true));
 
-        if (!$expediente) {
-            $_SESSION['mensaje'] = "Expediente no encontrado";
-            $_SESSION['tipo_mensaje'] = "danger";
-            header("Location: listar_expedientes.php");
-            exit;
-        }
-    } catch (PDOException $e) {
-        $_SESSION['mensaje'] = "Error al cargar el expediente: " . $e->getMessage();
-        $_SESSION['tipo_mensaje'] = "danger";
-        header("Location: listar_expedientes.php");
-        exit;
-    }
-} else {
-    $_SESSION['mensaje'] = "ID de expediente no proporcionado";
+// Validar que el ID exista y sea un número
+$id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+
+if (!$id) {
+    $_SESSION['mensaje'] = "ID de expediente inválido o no proporcionado";
     $_SESSION['tipo_mensaje'] = "danger";
     header("Location: listar_expedientes.php");
     exit;
 }
 
+try {
+    $db = new PDO(
+        "mysql:host=localhost;dbname=expedientes;charset=utf8mb4",
+        "root",
+        "",
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+
+    // Consultar expediente
+    $stmt = $db->prepare("SELECT * FROM expedientes WHERE id = ?");
+    $stmt->execute([$id]);
+    $expediente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$expediente) {
+        $_SESSION['mensaje'] = "Expediente no encontrado";
+        $_SESSION['tipo_mensaje'] = "danger";
+        header("Location: listar_expedientes.php");
+        exit;
+    }
+
+} catch (PDOException $e) {
+    $_SESSION['mensaje'] = "Error al cargar el expediente: " . $e->getMessage();
+    $_SESSION['tipo_mensaje'] = "danger";
+    header("Location: listar_expedientes.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -225,7 +233,7 @@ input[readonly] {
                                 <button type="submit" class="btn btn-primary me-2">
                                     <i class="bi bi-save"></i> Guardar Cambios
                                 </button>
-                                <!--<button type="button" class="btn btn-info text-white" onclick="verHistorial(<?= $expediente['id'] ?>)">
+                               <!--  <button type="button" class="btn btn-info text-white" onclick="verHistorial(<?= $expediente['id'] ?>)">
                                     <i class="bi bi-clock-history"></i> Ver Historial
                                 </button>-->
                             </div>
@@ -296,6 +304,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+
+<!-- Ver historial de cambios -->
 <script>
 async function verHistorial(id) {
     try {

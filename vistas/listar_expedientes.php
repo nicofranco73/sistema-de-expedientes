@@ -59,9 +59,7 @@ try {
             <main class="col-12 col-md-10 ms-sm-auto px-4 main-dashboard">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="titulo-principal">Listado de Expedientes</h1>
-                    <a href="actualizar_expedientes.php" class="btn btn-primary">
-                        <i class="bi bi-plus-lg"></i> Nuevo Expediente
-                    </a>
+                   
                 </div>
 
                 <?php if (!empty($_SESSION['mensaje'])): ?>
@@ -99,7 +97,7 @@ try {
                                         <td><?= htmlspecialchars($exp['lugar']) ?></td>
                                         <td><?= date('d/m/Y H:i', strtotime($exp['fecha_hora_ingreso'])) ?></td>
                                         <td>
-                                            <a href="actualizar_expedientes.php?id=<?= $exp['id'] ?>" 
+                                            <a href="actualizar_expedientes.php?id=<?= htmlspecialchars($exp['id']) ?>" 
                                                class="btn btn-sm btn-outline-primary"
                                                title="Editar">
                                                 <i class="bi bi-pencil"></i>
