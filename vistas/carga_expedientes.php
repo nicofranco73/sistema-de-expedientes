@@ -1,21 +1,3 @@
-
-<?php
-session_start();
-
-// Después del h1 del formulario
-if (isset($_SESSION['mensaje'])) {
-    $tipo = $_SESSION['tipo_mensaje'] ?? 'info';
-    echo "<div class='alert alert-{$tipo} alert-dismissible fade show' role='alert'>";
-    echo htmlspecialchars($_SESSION['mensaje']);
-    echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
-    echo "</div>";
-    unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
-}
-?>
-
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -26,6 +8,9 @@ if (isset($_SESSION['mensaje'])) {
     <!-- Bootstrap CSS + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
 </head>
 
@@ -59,13 +44,27 @@ if (isset($_SESSION['mensaje'])) {
                     <?php
                     session_start();
 
-                    // Después del h1 del formulario
                     if (isset($_SESSION['mensaje'])) {
                         $tipo = $_SESSION['tipo_mensaje'] ?? 'info';
-                        echo "<div class='alert alert-{$tipo} alert-dismissible fade show' role='alert'>";
-                        echo htmlspecialchars($_SESSION['mensaje']);
-                        echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
-                        echo "</div>";
+                        // Convertir tipo de Bootstrap a SweetAlert2
+                        $icon = match($tipo) {
+                            'success' => 'success',
+                            'danger' => 'error',
+                            'warning' => 'warning',
+                            default => 'info'
+                        };
+                        ?>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                Swal.fire({
+                                    title: '<?= htmlspecialchars($_SESSION['mensaje']) ?>',
+                                    icon: '<?= $icon ?>',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#0d6efd'
+                                });
+                            });
+                        </script>
+                        <?php
                         unset($_SESSION['mensaje'], $_SESSION['tipo_mensaje']);
                     }
                     ?>
@@ -139,7 +138,7 @@ if (isset($_SESSION['mensaje'])) {
                                 <input type="datetime-local" id="fecha_hora_ingreso" name="fecha_hora_ingreso" class="form-control" required>
                             </div>
 
-                             <!--  Lugar -->
+                            <!--  Lugar -->
                             <div class="col-md-4 mb-2">
                                 <label for="lugar" class="form-label">Lugar</label>
                                 <select id="lugar" name="lugar" class="form-select">
@@ -156,7 +155,7 @@ if (isset($_SESSION['mensaje'])) {
                                 </select>
                             </div>
 
-                            
+
                             <!--  Extracto -->
                             <div class="col-12 mb-2">
                                 <label for="extracto" class="form-label">Extracto</label>
@@ -164,12 +163,12 @@ if (isset($_SESSION['mensaje'])) {
                                 <div class="form-text">Máximo 300 caracteres.</div>
                             </div>
 
-                             <!--  Iniciador -->
+                            <!--  Iniciador -->
                             <div class="col-12 mb-2">
                                 <label for="iniciador" class="form-label">Iniciador</label>
                                 <input type="text" id="iniciador" name="iniciador" class="form-control">
                             </div>
-                        
+
 
 
 
@@ -184,12 +183,12 @@ if (isset($_SESSION['mensaje'])) {
                         </div>
 
                         <div class="row g-4 mb-4">
-                           <h2>Actualizacion de Datos</h2>
+                            <h2>Actualizacion de Datos</h2>
                         </div>
 
-                        
 
-                      
+
+
 
                         <!-- Botones de acción -->
                         <div class="d-flex justify-content-between mt-4">
@@ -209,31 +208,76 @@ if (isset($_SESSION['mensaje'])) {
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
 
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-                // Validar campos requeridos
-                const requeridos = form.querySelectorAll('[required]');
-                let valido = true;
+        // Validar campos requeridos
+        const requeridos = form.querySelectorAll('[required]');
+        let camposFaltantes = [];
 
-                requeridos.forEach(campo => {
-                    if (!campo.value.trim()) {
-                        campo.classList.add('is-invalid');
-                        valido = false;
-                    } else {
-                        campo.classList.remove('is-invalid');
-                    }
-                });
+        requeridos.forEach(campo => {
+            if (!campo.value.trim()) {
+                campo.classList.add('is-invalid');
+                camposFaltantes.push(campo.previousElementSibling.textContent.replace('*', '').trim());
+            } else {
+                campo.classList.remove('is-invalid');
+            }
+        });
 
-                if (valido) {
+        if (camposFaltantes.length > 0) {
+            Swal.fire({
+                title: 'Campos requeridos',
+                html: `Por favor complete los siguientes campos:<br><br>${camposFaltantes.join('<br>')}`,
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#0d6efd'
+            });
+        } else {
+            // Confirmar envío
+            Swal.fire({
+                title: '¿Desea guardar el expediente?',
+                text: 'Verifique que los datos sean correctos',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
                     form.submit();
                 }
             });
+        }
+    });
+
+    // Para el botón de reset
+    const btnReset = form.querySelector('button[type="reset"]');
+    btnReset.addEventListener('click', (e) => {
+        e.preventDefault();
+        Swal.fire({
+            title: '¿Limpiar formulario?',
+            text: 'Se borrarán todos los datos ingresados',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, limpiar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.reset();
+                form.classList.remove('was-validated');
+                const invalidos = form.querySelectorAll('.is-invalid');
+                invalidos.forEach(campo => campo.classList.remove('is-invalid'));
+            }
         });
-    </script>
+    });
+});
+</script>
 
 </html>
 </body>
