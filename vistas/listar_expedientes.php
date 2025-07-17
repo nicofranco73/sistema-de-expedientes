@@ -47,6 +47,19 @@ try {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
+    <style>
+    .swal2-html-container.text-start {
+        text-align: left !important;
+    }
+
+    .swal2-html-container .table {
+        font-size: 0.9em;
+    }
+
+    .swal2-html-container .table th {
+        background-color: #f8f9fa;
+    }
+    </style>
 </head>
 
 <body>
@@ -81,7 +94,7 @@ try {
                                         <th>Folio</th>
                                         <th>Libro</th>
                                         <th>Año</th>
-                                        <th>Lugar</th>
+                                        <th>Lugar actual</th>
                                         <th>Fecha Ingreso</th>
                                         <th>Acciones</th>
                                     </tr>
@@ -112,6 +125,11 @@ try {
                                                     title="Eliminar">
                                                 <i class="bi bi-trash"></i>
                                             </button>
+                                            <a href="pases_expediente.php?id=<?= htmlspecialchars($exp['id']) ?>" 
+                                               class="btn btn-sm btn-outline-success"
+                                               title="Pases">
+                                                <i class="bi bi-arrow-left-right"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -147,34 +165,73 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function verDetalles(id) {
-        // Implementar función para mostrar detalles en modal
-        Swal.fire({
-            title: 'Cargando...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-                fetch(`obtener_expediente.php?id=${id}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        Swal.fire({
-                            title: `Expediente ${data.numero}/${data.letra}/${data.anio}`,
-                            html: `
-                                <div class="text-start">
-                                    <p><strong>Iniciador:</strong> ${data.iniciador}</p>
-                                    <p><strong>Extracto:</strong> ${data.extracto}</p>
-                                    <p><strong>Lugar actual:</strong> ${data.lugar}</p>
-                                    <p><strong>Fecha de ingreso:</strong> ${data.fecha_hora_ingreso}</p>
-                                </div>
-                            `,
-                            width: '600px'
-                        });
-                    })
-                    .catch(() => {
-                        Swal.fire('Error', 'No se pudo cargar la información', 'error');
-                    });
+    async function verDetalles(id) {
+        try {
+            // Mostrar loader
+            Swal.fire({
+                title: 'Cargando...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            // Obtener datos del expediente e historial en paralelo
+            const [expedienteResp, historialResp] = await Promise.all([
+                fetch(`obtener_expediente.php?id=${id}`),
+                fetch(`obtener_historial_pases.php?id=${id}`)
+            ]);
+
+            const expediente = await expedienteResp.json();
+            const historial = await historialResp.json();
+
+            // Crear tabla de historial
+            let historialHTML = '';
+            if (historial.success && historial.data.length > 0) {
+                historialHTML = `
+                    <h6 class="mt-4 mb-3">Historial de Pases</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Desde</th>
+                                    <th>Hacia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${historial.data.map(pase => `
+                                    <tr>
+                                        <td>${pase.fecha_formateada}</td>
+                                        <td>${pase.lugar_anterior}</td>
+                                        <td>${pase.lugar_nuevo}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
             }
-        });
+
+            // Mostrar modal con toda la información
+            Swal.fire({
+                title: `Expediente ${expediente.numero}/${expediente.letra}/${expediente.anio}`,
+                html: `
+                    <div class="text-start">
+                        <p><strong>Iniciador:</strong> ${expediente.iniciador}</p>
+                        <p><strong>Extracto:</strong> ${expediente.extracto}</p>
+                        <p><strong>Lugar actual:</strong> ${expediente.lugar}</p>
+                        <p><strong>Fecha de ingreso:</strong> ${expediente.fecha_hora_ingreso}</p>
+                        ${historialHTML}
+                    </div>
+                `,
+                width: '800px',
+                customClass: {
+                    htmlContainer: 'swal2-html-container text-start'
+                }
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire('Error', 'No se pudo cargar la información', 'error');
+        }
     }
 
     function confirmarBorrado(id, numero, letra, anio) {

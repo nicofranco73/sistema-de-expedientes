@@ -198,7 +198,7 @@ input[readonly] {
 
                             <!-- Lugar -->
                             <div class="col-md-6">
-                                <label for="lugar" class="form-label">Lugar</label>
+                                <label for="lugar" class="form-label">Lugar actual</label>
                                 <input type="text" 
                                        id="lugar" 
                                        name="lugar" 
