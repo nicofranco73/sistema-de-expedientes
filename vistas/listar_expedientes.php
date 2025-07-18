@@ -107,16 +107,17 @@ try {
                                                     title="Ver detalles">
                                                 <i class="bi bi-eye"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger"
-                                                    onclick="confirmarBorrado(<?= $exp['id'] ?>, '<?= htmlspecialchars($exp['numero']) ?>', '<?= htmlspecialchars($exp['letra']) ?>', '<?= htmlspecialchars($exp['anio']) ?>')"
-                                                    title="Eliminar">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            
                                             <a href="pases_expediente.php?id=<?= htmlspecialchars($exp['id']) ?>" 
                                                class="btn btn-sm btn-outline-success"
                                                title="Pases">
                                                 <i class="bi bi-arrow-left-right"></i>
                                             </a>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    onclick="confirmarBorrado(<?= $exp['id'] ?>, '<?= htmlspecialchars($exp['numero']) ?>', '<?= htmlspecialchars($exp['letra']) ?>', '<?= htmlspecialchars($exp['anio']) ?>')"
+                                                    title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>

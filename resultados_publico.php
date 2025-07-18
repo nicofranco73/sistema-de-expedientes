@@ -76,6 +76,23 @@ try {
 
     $expediente = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Agregar después de obtener el expediente
+    if ($expediente) {
+        // Consultar historial de lugares
+        $sql = "SELECT 
+                    fecha_cambio,
+                    DATE_FORMAT(fecha_cambio, '%d/%m/%Y %H:%i') as fecha_formateada,
+                    lugar_anterior,
+                    lugar_nuevo
+                FROM historial_lugares 
+                WHERE expediente_id = :id
+                ORDER BY fecha_cambio ASC";
+                
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $expediente['id']]);
+        $historial = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Limpiar CAPTCHA usado
     unset($_SESSION['captcha']);
 
@@ -95,6 +112,96 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="publico/css/estilos.css">
+    <style>
+.tracking-timeline {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tracking-timeline::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    background-color: #e9ecef;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -3px;
+}
+
+.tracking-container {
+    padding: 10px 40px;
+    position: relative;
+    width: 50%;
+}
+
+.tracking-container::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    right: -17px;
+    background-color: white;
+    border: 4px solid #0d6efd;
+    top: 15px;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.tracking-left {
+    left: 0;
+}
+
+.tracking-right {
+    left: 50%;
+}
+
+.tracking-right::after {
+    left: -16px;
+}
+
+.tracking-content {
+    padding: 20px;
+    background-color: white;
+    position: relative;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.tracking-content h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tracking-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+@media screen and (max-width: 600px) {
+    .tracking-timeline::after {
+        left: 31px;
+    }
+    
+    .tracking-container {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
+    }
+    
+    .tracking-right {
+        left: 0%;
+    }
+    
+    .tracking-container::after {
+        left: 15px;
+    }
+}
+</style>
 </head>
 <body>
     <div class="container py-4">
@@ -106,7 +213,7 @@ try {
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title mb-4">
-                    Expediente N°:  <?= e($numero) ?>/<?= e($letra) ?>/<?= e($folio) ?>/<?= e($libro) ?><?= e($anio) ?>
+                    Expediente N°:  <?= e($numero) ?>/<?= e($letra) ?>/<?= e($folio) ?>/<?= e($libro) ?>/<?= e($anio) ?>
                     
                 </h3>
 
@@ -140,7 +247,12 @@ try {
                                 </tr>
                                 <tr>
                                     <th>Ubicación Actual:</th>
-                                    <td><?= e($expediente['lugar']) ?></td>
+                                    <td><span class="badge rounded-pill text-bg-warning"><?= e($expediente['lugar']) ?></span>
+
+                                        
+                                    
+                                    
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Extracto:</th>
@@ -153,6 +265,41 @@ try {
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Agregar después de la tabla de datos del expediente -->
+                    <?php if ($expediente && !empty($historial)): ?>
+                        <div class="mt-5">
+                            <h4 class="mb-4">Historial de Ubicaciones</h4>
+                            <div class="tracking-timeline">
+                                <!-- Mostrar lugar inicial -->
+                                <div class="tracking-container tracking-left">
+                                    <div class="tracking-content">
+                                        <h3>Ingreso del Expediente</h3>
+                                        <p>Ubicación: Mesa de Entrada</p>
+                                        <p class="text-muted">
+                                            <i class="bi bi-clock"></i> 
+                                            <?= date('d/m/Y H:i', strtotime($expediente['fecha_hora_ingreso'])) ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Mostrar historial de cambios -->
+                                <?php foreach ($historial as $index => $pase): ?>
+                                    <div class="tracking-container <?= $index % 2 == 0 ? 'tracking-right' : 'tracking-left' ?>">
+                                        <div class="tracking-content">
+                                            <h3>Cambio de Ubicación</h3>
+                                            <p>De: <?= e($pase['lugar_anterior']) ?></p>
+                                            <p>A: <?= e($pase['lugar_nuevo']) ?></p>
+                                            <p class="text-muted">
+                                                <i class="bi bi-clock"></i> 
+                                                <?= $pase['fecha_formateada'] ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <div class="alert alert-warning">
                         <i class="bi bi-exclamation-triangle"></i>
