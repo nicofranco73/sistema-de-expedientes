@@ -93,6 +93,17 @@ try {
         $historial = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Agregar después de obtener el historial
+    if ($expediente && !empty($historial)) {
+        // Calcular días transcurridos
+        $primera_fecha = strtotime($expediente['fecha_hora_ingreso']);
+        $ultima_fecha = strtotime(end($historial)['fecha_cambio']);
+        
+        $diferencia = $ultima_fecha - $primera_fecha;
+        $dias_transcurridos = floor($diferencia / (60 * 60 * 24));
+        $horas_transcurridas = floor(($diferencia % (60 * 60 * 24)) / (60 * 60));
+    }
+
     // Limpiar CAPTCHA usado
     unset($_SESSION['captcha']);
 
@@ -180,6 +191,28 @@ try {
     margin: 0;
     font-size: 0.9rem;
     color: #6c757d;
+}
+
+.progress {
+    background-color: #e9ecef;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+
+.progress-bar {
+    font-size: 0.9rem;
+    line-height: 25px;
+    font-weight: 500;
+}
+
+.card-title {
+    color: #495057;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.bi-calendar-range {
+    color: #198754;
+    margin-right: 0.5rem;
 }
 
 @media screen and (max-width: 600px) {
@@ -297,6 +330,36 @@ try {
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Agregar después del div tracking-timeline -->
+                    <?php if ($expediente && !empty($historial)): ?>
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-calendar-range"></i> 
+                                    Tiempo Total de Tramitación
+                                </h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1" style="height: 25px;">
+                                        <div class="progress-bar bg-success" 
+                                             role="progressbar" 
+                                             style="width: 100%;" 
+                                             aria-valuenow="100" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            <?= $dias_transcurridos ?> días, <?= $horas_transcurridas ?> horas
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-muted small">
+                                    <p class="mb-0">
+                                        <strong>Desde:</strong> <?= date('d/m/Y H:i', $primera_fecha) ?>
+                                        <strong class="ms-3">Hasta:</strong> <?= date('d/m/Y H:i', $ultima_fecha) ?>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>
