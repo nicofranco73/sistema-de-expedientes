@@ -154,13 +154,15 @@ try {
                                 
                                 
                                 <br>
-                                <strong>Lugar actual:</strong> <?= htmlspecialchars($expediente['lugar']) ?>
+
+                                <strong>Lugar actual:</strong> <span class="badge rounded-pill text-bg-warning"><?= htmlspecialchars($expediente['lugar']) ?></span>
+                                
                             </div>
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>Fecha y Hora</th>
-                                        <th>Desde</th>
+                                        <th>Desde <i class="bi bi-arrow-right"></i></th>
                                         <th>Hacia</th>
                                         <th>Tiempo desde ingreso</th>
                                         <th>Tiempo desde último pase</th>

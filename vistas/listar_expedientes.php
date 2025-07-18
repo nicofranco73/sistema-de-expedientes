@@ -47,19 +47,6 @@ try {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
-    <style>
-    .swal2-html-container.text-start {
-        text-align: left !important;
-    }
-
-    .swal2-html-container .table {
-        font-size: 0.9em;
-    }
-
-    .swal2-html-container .table th {
-        background-color: #f8f9fa;
-    }
-    </style>
 </head>
 
 <body>
@@ -186,6 +173,9 @@ try {
             // Crear tabla de historial
             let historialHTML = '';
             if (historial.success && historial.data.length > 0) {
+                // Ya no necesitamos invertir el array porque viene ordenado de la base de datos
+                const historialOrdenado = historial.data;
+                
                 historialHTML = `
                     <h6 class="mt-4 mb-3">Historial de Pases</h6>
                     <div class="table-responsive">
@@ -193,12 +183,12 @@ try {
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
-                                    <th>Desde</th>
+                                    <th>Desde <i class="bi bi-arrow-right"></i></th>
                                     <th>Hacia</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${historial.data.map(pase => `
+                                ${historialOrdenado.map(pase => `
                                     <tr>
                                         <td>${pase.fecha_formateada}</td>
                                         <td>${pase.lugar_anterior}</td>
@@ -212,13 +202,29 @@ try {
 
             // Mostrar modal con toda la información
             Swal.fire({
-                title: `Expediente ${expediente.numero}/${expediente.letra}/${expediente.anio}`,
+                title: `Expediente ${expediente.numero}-${expediente.letra}-${expediente.folio}-${expediente.libro}-${expediente.anio}`,
                 html: `
                     <div class="text-start">
                         <p><strong>Iniciador:</strong> ${expediente.iniciador}</p>
                         <p><strong>Extracto:</strong> ${expediente.extracto}</p>
-                        <p><strong>Lugar actual:</strong> ${expediente.lugar}</p>
-                        <p><strong>Fecha de ingreso:</strong> ${expediente.fecha_hora_ingreso}</p>
+
+
+                        <p><strong>Fecha de ingreso:</strong> <span class="badge rounded-pill text-bg-secondary">${
+                            expediente.fecha_hora_ingreso
+                                ? (() => {
+                                    const d = new Date(expediente.fecha_hora_ingreso);
+                                    const pad = n => n.toString().padStart(2, '0');
+                                    return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                                })()
+                                : ''
+                        }</span></p>
+
+                        <p><strong>Lugar actual:</strong> <span class="badge rounded-pill text-bg-warning">${expediente.lugar}</span></p>
+
+
+
+
+                        
                         ${historialHTML}
                     </div>
                 `,

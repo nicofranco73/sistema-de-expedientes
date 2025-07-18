@@ -1,4 +1,3 @@
-
 <?php
 header('Content-Type: application/json');
 
@@ -16,12 +15,13 @@ try {
     );
 
     $sql = "SELECT 
-                DATE_FORMAT(fecha_cambio, '%d/%m/%Y %H:%i') as fecha_formateada,
-                lugar_anterior,
-                lugar_nuevo
-            FROM historial_lugares 
-            WHERE expediente_id = ?
-            ORDER BY fecha_cambio DESC";
+                hl.fecha_cambio,
+                DATE_FORMAT(hl.fecha_cambio, '%d/%m/%Y %H:%i') as fecha_formateada,
+                hl.lugar_anterior,
+                hl.lugar_nuevo
+            FROM historial_lugares hl
+            WHERE hl.expediente_id = ?
+            ORDER BY hl.fecha_cambio ASC";  // Cambiado a ASC para mostrar las más antiguas primero
 
     $stmt = $db->prepare($sql);
     $stmt->execute([$id]);
