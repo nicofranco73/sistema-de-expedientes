@@ -15,20 +15,81 @@ try {
     $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
     $offset = ($pagina - 1) * $por_pagina;
 
-    // Consulta total de registros
-    $total = $db->query("SELECT COUNT(*) FROM expedientes")->fetchColumn();
+    // Preparar condiciones WHERE
+    $where = [];
+    $params = [];
+
+    if (!empty($_GET['numero'])) {
+        $where[] = "numero LIKE :numero";
+        $params[':numero'] = '%' . $_GET['numero'] . '%';
+    }
+
+    if (!empty($_GET['letra'])) {
+        $where[] = "letra LIKE :letra";
+        $params[':letra'] = '%' . $_GET['letra'] . '%';
+    }
+
+    if (!empty($_GET['folio'])) {
+        $where[] = "folio LIKE :folio";
+        $params[':folio'] = '%' . $_GET['folio'] . '%';
+    }
+
+    if (!empty($_GET['libro'])) {
+        $where[] = "libro LIKE :libro";
+        $params[':libro'] = '%' . $_GET['libro'] . '%';
+    }
+
+    if (!empty($_GET['anio'])) {
+        $where[] = "anio LIKE :anio";
+        $params[':anio'] = '%' . $_GET['anio'] . '%';
+    }
+
+    if (!empty($_GET['lugar'])) {
+        $where[] = "lugar LIKE :lugar";
+        $params[':lugar'] = '%' . $_GET['lugar'] . '%';
+    }
+
+    if (!empty($_GET['fecha_desde'])) {
+        $where[] = "DATE(fecha_hora_ingreso) >= :fecha_desde";
+        $params[':fecha_desde'] = $_GET['fecha_desde'];
+    }
+
+    if (!empty($_GET['fecha_hasta'])) {
+        $where[] = "DATE(fecha_hora_ingreso) <= :fecha_hasta";
+        $params[':fecha_hasta'] = $_GET['fecha_hasta'];
+    }
+
+    if (!empty($_GET['iniciador'])) {
+        $where[] = "iniciador LIKE :iniciador";
+        $params[':iniciador'] = '%' . $_GET['iniciador'] . '%';
+    }
+
+    // Construir consulta SQL
+    $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+
+    // Consulta total de registros con filtros
+    $sql_count = "SELECT COUNT(*) FROM expedientes $whereClause";
+    $stmt = $db->prepare($sql_count);
+    $stmt->execute($params);
+    $total = $stmt->fetchColumn();
     $total_paginas = ceil($total / $por_pagina);
 
-    // Consulta de expedientes con paginación
+    // Consulta de expedientes con filtros y paginación
     $sql = "SELECT * FROM expedientes 
+            $whereClause
             ORDER BY fecha_hora_ingreso DESC 
             LIMIT :offset, :limit";
-    
+
     $stmt = $db->prepare($sql);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->bindValue(':limit', $por_pagina, PDO::PARAM_INT);
+
+    // Vincular parámetros de filtros
+    foreach ($params as $param => $value) {
+        $stmt->bindValue($param, $value);
+    }
+
     $stmt->execute();
-    
     $expedientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (Exception $e) {
@@ -59,7 +120,67 @@ try {
             <main class="col-12 col-md-10 ms-sm-auto px-4 main-dashboard">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="titulo-principal">Listado de Expedientes</h1>
-                   
+                </div>
+
+                <!-- Agregar el filtro -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="GET" class="row g-3">
+                            <div class="col-md-2">
+                                <label for="numero" class="form-label">Número</label>
+                                <input type="text" class="form-control" id="numero" name="numero" 
+                                       value="<?= htmlspecialchars($_GET['numero'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="letra" class="form-label">Letra</label>
+                                <input type="text" class="form-control" id="letra" name="letra" 
+                                       value="<?= htmlspecialchars($_GET['letra'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="folio" class="form-label">Folio</label>
+                                <input type="text" class="form-control" id="folio" name="folio" 
+                                       value="<?= htmlspecialchars($_GET['folio'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="libro" class="form-label">Libro</label>
+                                <input type="text" class="form-control" id="libro" name="libro" 
+                                       value="<?= htmlspecialchars($_GET['libro'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="anio" class="form-label">Año</label>
+                                <input type="text" class="form-control" id="anio" name="anio" 
+                                       value="<?= htmlspecialchars($_GET['anio'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="lugar" class="form-label">Lugar actual</label>
+                                <input type="text" class="form-control" id="lugar" name="lugar" 
+                                       value="<?= htmlspecialchars($_GET['lugar'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fecha_desde" class="form-label">Fecha desde</label>
+                                <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" 
+                                       value="<?= htmlspecialchars($_GET['fecha_desde'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fecha_hasta" class="form-label">Fecha hasta</label>
+                                <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" 
+                                       value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="iniciador" class="form-label">Iniciador</label>
+                                <input type="text" class="form-control" id="iniciador" name="iniciador" 
+                                       value="<?= htmlspecialchars($_GET['iniciador'] ?? '') ?>">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                                <a href="listar_expedientes.php" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Limpiar filtros
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <?php if (!empty($_SESSION['mensaje'])): ?>
@@ -127,23 +248,31 @@ try {
 
                         <!-- Paginación -->
                         <?php if ($total_paginas > 1): ?>
-                        <nav aria-label="Navegación de páginas" class="mt-4">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item <?= ($pagina <= 1) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="?pagina=<?= $pagina-1 ?>">Anterior</a>
-                                </li>
-                                
-                                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                                    <li class="page-item <?= ($pagina == $i) ? 'active' : '' ?>">
-                                        <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
-                                    </li>
-                                <?php endfor; ?>
-                                
-                                <li class="page-item <?= ($pagina >= $total_paginas) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="?pagina=<?= $pagina+1 ?>">Siguiente</a>
-                                </li>
-                            </ul>
-                        </nav>
+<?php
+// Obtener todos los parámetros actuales excepto 'pagina'
+$params = $_GET;
+unset($params['pagina']);
+$query_string = http_build_query($params);
+$query_string = $query_string ? '&' . $query_string : '';
+?>
+
+<nav aria-label="Navegación de páginas" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item <?= ($pagina <= 1) ? 'disabled' : '' ?>">
+            <a class="page-link" href="?pagina=<?= $pagina-1 ?><?= $query_string ?>">Anterior</a>
+        </li>
+        
+        <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+            <li class="page-item <?= ($pagina == $i) ? 'active' : '' ?>">
+                <a class="page-link" href="?pagina=<?= $i ?><?= $query_string ?>"><?= $i ?></a>
+            </li>
+        <?php endfor; ?>
+        
+        <li class="page-item <?= ($pagina >= $total_paginas) ? 'disabled' : '' ?>">
+            <a class="page-link" href="?pagina=<?= $pagina+1 ?><?= $query_string ?>">Siguiente</a>
+        </li>
+    </ul>
+</nav>
                         <?php endif; ?>
                     </div>
                 </div>

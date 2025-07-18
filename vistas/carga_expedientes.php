@@ -1,3 +1,42 @@
+<?php
+session_start();
+
+try {
+    $db = new PDO(
+        "mysql:host=localhost;dbname=Iniciadores;charset=utf8mb4",
+        "root",
+        "",
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+
+    // Consultar personas físicas
+    $stmt = $db->query("SELECT id, CONCAT(apellido, ', ', nombre, ' (', dni, ')') as nombre_completo 
+                        FROM persona_fisica 
+                        ORDER BY apellido, nombre");
+    $personas_fisicas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Consultar personas jurídicas
+    $stmt = $db->query("SELECT id, CONCAT(razon_social, ' (', cuit, ')') as nombre_completo 
+                        FROM persona_juri_entidad 
+                        ORDER BY razon_social");
+    $personas_juridicas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Consultar concejales
+    $stmt = $db->query("SELECT id, CONCAT(apellido, ', ', nombre, ' - ', bloque) as nombre_completo 
+                        FROM concejales 
+                        ORDER BY apellido, nombre");
+    $concejales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    $_SESSION['mensaje'] = "Error al cargar iniciadores: " . $e->getMessage();
+    $_SESSION['tipo_mensaje'] = "danger";
+}
+
+// Debug: Mostrar datos consultados
+var_dump($personas_fisicas);
+var_dump($personas_juridicas);
+var_dump($concejales);
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,6 +51,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -174,12 +215,39 @@
                             <!--  Iniciador -->
                             <div class="col-12 mb-2">
                                 <label for="iniciador" class="form-label">Iniciador *</label>
-                                <input type="text" 
-                                       id="iniciador" 
-                                       name="iniciador" 
-                                       class="form-control"
-                                       required>
-                                <div class="invalid-feedback">Por favor ingrese el iniciador</div>
+                                <select id="iniciador" name="iniciador" class="form-select" required>
+                                    <option value="">Seleccione un iniciador...</option>
+                                    <?php if (!empty($personas_fisicas)): ?>
+                                        <optgroup label="Personas Físicas">
+                                            <?php foreach ($personas_fisicas as $persona): ?>
+                                                <option value="PF-<?= $persona['id'] ?>">
+                                                    <?= htmlspecialchars($persona['nombre_completo']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($personas_juridicas)): ?>
+                                        <optgroup label="Personas Jurídicas">
+                                            <?php foreach ($personas_juridicas as $entidad): ?>
+                                                <option value="PJ-<?= $entidad['id'] ?>">
+                                                    <?= htmlspecialchars($entidad['nombre_completo']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($concejales)): ?>
+                                        <optgroup label="Concejales">
+                                            <?php foreach ($concejales as $concejal): ?>
+                                                <option value="CO-<?= $concejal['id'] ?>">
+                                                    <?= htmlspecialchars($concejal['nombre_completo']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="invalid-feedback">Por favor seleccione un iniciador</div>
                             </div>
 
 
@@ -218,6 +286,8 @@
 
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
@@ -306,11 +376,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    $('#iniciador').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Buscar iniciador...',
+        allowClear: true,
+        language: {
+            noResults: function() {
+                return "No se encontraron resultados";
+            },
+            searching: function() {
+                return "Buscando...";
+            }
+        }
+    });
 });
 </script>
 
-</html>
 </body>
-</body>
-
 </html>
