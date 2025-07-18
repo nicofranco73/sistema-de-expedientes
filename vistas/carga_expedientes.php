@@ -1,3 +1,42 @@
+<?php
+session_start();
+
+try {
+    $db = new PDO(
+        "mysql:host=localhost;dbname=Iniciadores;charset=utf8mb4",
+        "root",
+        "",
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+
+    // Consultar personas físicas
+    $stmt = $db->query("SELECT id, CONCAT(apellido, ', ', nombre, ' (', dni, ')') as nombre_completo 
+                        FROM persona_fisica 
+                        ORDER BY apellido, nombre");
+    $personas_fisicas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Consultar personas jurídicas
+    $stmt = $db->query("SELECT id, CONCAT(razon_social, ' (', cuit, ')') as nombre_completo 
+                        FROM persona_juri_entidad 
+                        ORDER BY razon_social");
+    $personas_juridicas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Consultar concejales
+    $stmt = $db->query("SELECT id, CONCAT(apellido, ', ', nombre, ' - ', bloque) as nombre_completo 
+                        FROM concejales 
+                        ORDER BY apellido, nombre");
+    $concejales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    $_SESSION['mensaje'] = "Error al cargar iniciadores: " . $e->getMessage();
+    $_SESSION['tipo_mensaje'] = "danger";
+}
+
+// Remover los var_dump de debug
+// var_dump($personas_fisicas);
+// var_dump($personas_juridicas);
+// var_dump($concejales);
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,6 +51,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <link rel="stylesheet" href="/expedientes/publico/css/estilos.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -174,12 +215,39 @@
                             <!--  Iniciador -->
                             <div class="col-12 mb-2">
                                 <label for="iniciador" class="form-label">Iniciador *</label>
-                                <input type="text" 
-                                       id="iniciador" 
-                                       name="iniciador" 
-                                       class="form-control"
-                                       required>
-                                <div class="invalid-feedback">Por favor ingrese el iniciador</div>
+                                <select id="iniciador" name="iniciador" class="form-select" required>
+                                    <option value="">Seleccione un iniciador...</option>
+                                    <?php if (!empty($personas_fisicas)): ?>
+                                        <optgroup label="Personas Físicas">
+                                            <?php foreach ($personas_fisicas as $persona): ?>
+                                                <option value="PF-<?= $persona['id'] ?>">
+                                                    <?= htmlspecialchars($persona['nombre_completo']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($personas_juridicas)): ?>
+                                        <optgroup label="Personas Jurídicas">
+                                            <?php foreach ($personas_juridicas as $entidad): ?>
+                                                <option value="PJ-<?= $entidad['id'] ?>">
+                                                    <?= htmlspecialchars($entidad['nombre_completo']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($concejales)): ?>
+                                        <optgroup label="Concejales">
+                                            <?php foreach ($concejales as $concejal): ?>
+                                                <option value="CO-<?= $concejal['id'] ?>">
+                                                    <?= htmlspecialchars($concejal['nombre_completo']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </optgroup>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="invalid-feedback">Por favor seleccione un iniciador</div>
                             </div>
 
 
@@ -218,99 +286,81 @@
 
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
-    const MAX_EXTRACTO = 300;
+    
+    // Validar números positivos
+    const numeroInputs = document.querySelectorAll('input[pattern="[0-9]{1,6}"]');
+    numeroInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 6) {
+                this.value = this.value.slice(0, 6);
+            }
+        });
+    });
 
-    // Contador de caracteres para el extracto
+    // Validar letra mayúscula
+    const letraSelect = document.getElementById('letra');
+    letraSelect.addEventListener('change', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    // Validar extracto
     const extracto = document.getElementById('extracto');
+    const MAX_EXTRACTO = 300;
+    
     extracto.addEventListener('input', function() {
         const remaining = MAX_EXTRACTO - this.value.length;
         this.nextElementSibling.textContent = `Caracteres restantes: ${remaining}`;
-    });
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Validar campos requeridos
-        const requeridos = form.querySelectorAll('[required]');
-        let camposFaltantes = [];
-
-        requeridos.forEach(campo => {
-            if (!campo.value.trim()) {
-                campo.classList.add('is-invalid');
-                const label = campo.previousElementSibling.textContent.replace('*', '').trim();
-                camposFaltantes.push(label);
-            } else {
-                campo.classList.remove('is-invalid');
-            }
-        });
-
-        // Validación específica para el extracto
-        const extractoValue = extracto.value.trim();
-        if (extractoValue.length > MAX_EXTRACTO) {
-            extracto.classList.add('is-invalid');
-            camposFaltantes.push(`Extracto (máximo ${MAX_EXTRACTO} caracteres)`);
+        
+        if (this.value.length > MAX_EXTRACTO) {
+            this.value = this.value.substring(0, MAX_EXTRACTO);
         }
-
-        if (camposFaltantes.length > 0) {
-            Swal.fire({
-                title: 'Campos requeridos',
-                html: `Por favor complete los siguientes campos:<br><br>${camposFaltantes.join('<br>')}`,
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#0d6efd'
-            });
-            return;
-        }
-
-        // Confirmar envío
-        Swal.fire({
-            title: '¿Desea guardar el expediente?',
-            text: 'Verifique que los datos sean correctos',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, guardar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    });
-
-    // Para el botón de reset
-    const btnReset = form.querySelector('button[type="reset"]');
-    btnReset.addEventListener('click', (e) => {
-        e.preventDefault();
-        Swal.fire({
-            title: '¿Limpiar formulario?',
-            text: 'Se borrarán todos los datos ingresados',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, limpiar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.reset();
-                form.classList.remove('was-validated');
-                document.querySelectorAll('.is-invalid').forEach(campo => {
-                    campo.classList.remove('is-invalid');
-                });
-                extracto.nextElementSibling.textContent = `Máximo ${MAX_EXTRACTO} caracteres.`;
-            }
-        });
     });
 });
 </script>
+<script>
+    // Función para mostrar errores
+    function mostrarError(mensaje) {
+        Swal.fire({
+            title: 'Error',
+            text: mensaje,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#0d6efd'
+        });
+    }
 
-</html>
-</body>
-</body>
+    // Función para validar el formulario
+    function validarFormulario(form) {
+        const campos = {
+            numero: 'Número',
+            letra: 'Letra',
+            folio: 'Folio',
+            libro: 'Libro',
+            anio: 'Año',
+            fecha_hora_ingreso: 'Fecha y Hora de Ingreso',
+            lugar: 'Lugar',
+            extracto: 'Extracto',
+            iniciador: 'Iniciador'
+        };
 
+        for (let [id, nombre] of Object.entries(campos)) {
+            const campo = form.querySelector(`#${id}`);
+            if (!campo.value.trim()) {
+                mostrarError(`El campo "${nombre}" es obligatorio`);
+                campo.focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
+</script>
+
+</body>
 </html>
