@@ -58,7 +58,7 @@ session_start();
                             <div class="row g-4 justify-content-center">
                                 <!-- Tarjeta Administrador -->
                                 <div class="col-12 col-md-5">
-                                    <a href="carga_expedientes.php" class="text-decoration-none">
+                                    <a href="carga_iniciador.php" class="text-decoration-none">
                                         <div class="card role-card h-100 shadow-sm hover-card">
                                             <div class="card-body p-4">
                                                 <div class="role-icon mb-3">
