@@ -32,10 +32,10 @@ try {
     $_SESSION['tipo_mensaje'] = "danger";
 }
 
-// Debug: Mostrar datos consultados
-var_dump($personas_fisicas);
-var_dump($personas_juridicas);
-var_dump($concejales);
+// Remover los var_dump de debug
+// var_dump($personas_fisicas);
+// var_dump($personas_juridicas);
+// var_dump($concejales);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -291,107 +291,75 @@ var_dump($concejales);
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
-    const MAX_EXTRACTO = 300;
+    
+    // Validar números positivos
+    const numeroInputs = document.querySelectorAll('input[pattern="[0-9]{1,6}"]');
+    numeroInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 6) {
+                this.value = this.value.slice(0, 6);
+            }
+        });
+    });
 
-    // Contador de caracteres para el extracto
+    // Validar letra mayúscula
+    const letraSelect = document.getElementById('letra');
+    letraSelect.addEventListener('change', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    // Validar extracto
     const extracto = document.getElementById('extracto');
+    const MAX_EXTRACTO = 300;
+    
     extracto.addEventListener('input', function() {
         const remaining = MAX_EXTRACTO - this.value.length;
         this.nextElementSibling.textContent = `Caracteres restantes: ${remaining}`;
-    });
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Validar campos requeridos
-        const requeridos = form.querySelectorAll('[required]');
-        let camposFaltantes = [];
-
-        requeridos.forEach(campo => {
-            if (!campo.value.trim()) {
-                campo.classList.add('is-invalid');
-                const label = campo.previousElementSibling.textContent.replace('*', '').trim();
-                camposFaltantes.push(label);
-            } else {
-                campo.classList.remove('is-invalid');
-            }
-        });
-
-        // Validación específica para el extracto
-        const extractoValue = extracto.value.trim();
-        if (extractoValue.length > MAX_EXTRACTO) {
-            extracto.classList.add('is-invalid');
-            camposFaltantes.push(`Extracto (máximo ${MAX_EXTRACTO} caracteres)`);
-        }
-
-        if (camposFaltantes.length > 0) {
-            Swal.fire({
-                title: 'Campos requeridos',
-                html: `Por favor complete los siguientes campos:<br><br>${camposFaltantes.join('<br>')}`,
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#0d6efd'
-            });
-            return;
-        }
-
-        // Confirmar envío
-        Swal.fire({
-            title: '¿Desea guardar el expediente?',
-            text: 'Verifique que los datos sean correctos',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, guardar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    });
-
-    // Para el botón de reset
-    const btnReset = form.querySelector('button[type="reset"]');
-    btnReset.addEventListener('click', (e) => {
-        e.preventDefault();
-        Swal.fire({
-            title: '¿Limpiar formulario?',
-            text: 'Se borrarán todos los datos ingresados',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, limpiar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.reset();
-                form.classList.remove('was-validated');
-                document.querySelectorAll('.is-invalid').forEach(campo => {
-                    campo.classList.remove('is-invalid');
-                });
-                extracto.nextElementSibling.textContent = `Máximo ${MAX_EXTRACTO} caracteres.`;
-            }
-        });
-    });
-
-    $('#iniciador').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: 'Buscar iniciador...',
-        allowClear: true,
-        language: {
-            noResults: function() {
-                return "No se encontraron resultados";
-            },
-            searching: function() {
-                return "Buscando...";
-            }
+        
+        if (this.value.length > MAX_EXTRACTO) {
+            this.value = this.value.substring(0, MAX_EXTRACTO);
         }
     });
 });
+</script>
+<script>
+    // Función para mostrar errores
+    function mostrarError(mensaje) {
+        Swal.fire({
+            title: 'Error',
+            text: mensaje,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#0d6efd'
+        });
+    }
+
+    // Función para validar el formulario
+    function validarFormulario(form) {
+        const campos = {
+            numero: 'Número',
+            letra: 'Letra',
+            folio: 'Folio',
+            libro: 'Libro',
+            anio: 'Año',
+            fecha_hora_ingreso: 'Fecha y Hora de Ingreso',
+            lugar: 'Lugar',
+            extracto: 'Extracto',
+            iniciador: 'Iniciador'
+        };
+
+        for (let [id, nombre] of Object.entries(campos)) {
+            const campo = form.querySelector(`#${id}`);
+            if (!campo.value.trim()) {
+                mostrarError(`El campo "${nombre}" es obligatorio`);
+                campo.focus();
+                return false;
+            }
+        }
+
+        return true;
+    }
 </script>
 
 </body>
