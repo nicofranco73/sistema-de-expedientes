@@ -78,15 +78,7 @@ if (!isset($_SESSION['usuario'])) {
                     </div>
                 </div>
                 <!-- Accesos rápidos -->
-                <div class="d-flex flex-wrap gap-3 justify-content-center accesos-dashboard">
-                    <a href="/expedientes/vistas/carga_expedientes.php" class="btn btn-primary btn-lg">
-                        <i class="bi bi-archive"></i> Nuevo Expediente
-                    </a>
-                    <a href="/expedientes/vistas/carga_iniciador.php" class="btn btn-outline-primary btn-lg">
-                        <i class="bi bi-person-plus"></i> Nuevo Iniciador
-                    </a>
-                    <!-- Eliminado el acceso rápido a Ver Expedientes -->
-                </div>
+                
                 <!-- NO HAY FORMULARIO DE CONSULTA ACÁ -->
             </main>
         </div>
