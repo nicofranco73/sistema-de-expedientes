@@ -87,7 +87,7 @@ session_start();
                                 </div>
 
                                 <div class="col-12 col-md-5">
-                                    <a href="../index.php" class="text-decoration-none">
+                                    <a href="carga_concejal.php" class="text-decoration-none">
                                         <div class="card role-card h-100 shadow-sm hover-card">
                                             <div class="card-body p-4">
                                                 <div class="role-icon mb-3">
